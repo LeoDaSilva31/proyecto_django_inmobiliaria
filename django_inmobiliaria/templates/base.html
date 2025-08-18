@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Inmobiliaria{% endblock %}</title>
+
+  <!-- Tailwind (CDN para desarrollo; en prod lo compilamos) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+</head>
+<body class="min-h-full bg-gray-50 text-gray-900">
+  <!-- Top bar -->
+  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b">
+    <div class="mx-auto max-w-7xl px-3 py-2 flex items-center gap-3">
+      <a href="{% url 'home' %}" class="font-bold text-lg">🏠 Inmobiliaria</a>
+      <form action="{% url 'buscar_propiedades' %}" method="get" class="flex-1">
+        <div class="flex items-center gap-2">
+          <input name="q" type="search" placeholder="Buscar por zona, tipo, 'acepta mascotas'..."
+                 class="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring" />
+          <button class="rounded-xl border px-3 py-2 hover:bg-gray-100" aria-label="Buscar">🔍</button>
+        </div>
+      </form>
+      <a href="{% url 'propiedades_cercanas' %}" class="hidden sm:inline rounded-xl border px-3 py-2 hover:bg-gray-100">Cerca mío</a>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="mx-auto max-w-7xl px-3 py-4">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="mx-auto max-w-7xl px-3 py-8 text-xs text-gray-500">
+    <div class="flex items-center justify-between">
+      <p>© {{ now|default:0|date:"Y" }} Inmobiliaria</p>
+      <!-- Link discreto a login con redirect directo a crear propiedad en el Admin -->
+      <a class="opacity-60 hover:opacity-100"
+         href="{% url 'login' %}?next=/admin/propiedades/propiedad/add/">Administración</a>
+    </div>
+  </footer>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

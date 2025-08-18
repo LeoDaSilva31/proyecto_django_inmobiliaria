@@ -1,0 +1,31 @@
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {% for p in page_obj.object_list %}
+    <a href="{% url 'propiedad_detalle' p.codigo %}" class="group rounded-2xl border overflow-hidden bg-white hover:shadow">
+      <img src="{{ p.imagen_principal.url }}" alt="{{ p.titulo }}" class="h-48 w-full object-cover group-hover:opacity-95">
+      <div class="p-3">
+        <h2 class="font-semibold line-clamp-1">{{ p.titulo }}</h2>
+        <p class="text-sm text-gray-600">{{ p.precio_display }}</p>
+        <div class="mt-1 flex items-center gap-2 text-sm text-gray-600">
+          <span>🛏️ {{ p.habitaciones }}</span>
+          <span>🛁 {{ p.banos }}</span>
+          {% if p.cochera %}<span>🚗 Cochera</span>{% else %}<span class="opacity-70">🚗 No posee</span>{% endif %}
+          {% if p.acepta_mascotas %}<span>🐶 Acepta</span>{% else %}<span class="opacity-70">🐶 No</span>{% endif %}
+        </div>
+        <p class="text-xs text-gray-500 mt-1 line-clamp-1">📍 {{ p.direccion }}, {{ p.localidad }}, {{ p.provincia }}</p>
+      </div>
+    </a>
+  {% empty %}
+    <p class="text-gray-600">No hay resultados.</p>
+  {% endfor %}
+</div>
+
+<!-- Paginación reutilizable -->
+<div class="mt-6 flex items-center justify-center gap-2">
+  {% if page_obj.has_previous %}
+    <a class="rounded-xl border px-3 py-1" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Anterior</a>
+  {% endif %}
+  <span class="text-sm text-gray-600">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a class="rounded-xl border px-3 py-1" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Siguiente</a>
+  {% endif %}
+</div>

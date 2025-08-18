@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Administración{% endblock %}
+{% block content %}
+<h1 class="text-xl font-semibold mb-4">Acceso para personal</h1>
+<form method="post" class="max-w-sm space-y-3">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ next }}">
+  <div>
+    <label class="block text-sm mb-1">DNI</label>
+    <input name="dni" class="w-full rounded-xl border px-3 py-2" required>
+  </div>
+  <div>
+    <label class="block text-sm mb-1">Contraseña</label>
+    <input type="password" name="password" class="w-full rounded-xl border px-3 py-2" required>
+  </div>
+  {% if form.non_field_errors %}
+    <p class="text-red-600 text-sm">{{ form.non_field_errors|join:", " }}</p>
+  {% endif %}
+  <button class="rounded-xl border px-4 py-2 hover:bg-gray-100">Ingresar</button>
+</form>
+<p class="text-xs text-gray-500 mt-3">Solo personal autorizado.</p>
+{% endblock %}

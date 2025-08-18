@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Inicio{% endblock %}
+{% block content %}
+<h1 class="text-xl font-semibold mb-3">Propiedades destacadas</h1>
+{% if destacadas %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for p in destacadas %}
+      <a href="{% url 'propiedad_detalle' p.codigo %}" class="group rounded-2xl border overflow-hidden bg-white hover:shadow">
+        <img src="{{ p.imagen_principal.url }}" alt="{{ p.titulo }}" class="h-48 w-full object-cover group-hover:opacity-95">
+        <div class="p-3">
+          <h2 class="font-semibold line-clamp-1">{{ p.titulo }}</h2>
+          <p class="text-sm text-gray-600">{{ p.precio_display }}</p>
+          <div class="mt-1 flex items-center gap-2 text-sm text-gray-600">
+            <span>🛏️ {{ p.habitaciones }}</span>
+            <span>🛁 {{ p.banos }}</span>
+            {% if p.cochera %}<span>🚗 Cochera</span>{% else %}<span class="opacity-70">🚗 No posee</span>{% endif %}
+            {% if p.acepta_mascotas %}<span>🐶 Acepta</span>{% else %}<span class="opacity-70">🐶 No</span>{% endif %}
+          </div>
+          <p class="text-xs text-gray-500 mt-1 line-clamp-1">📍 {{ p.direccion }}, {{ p.localidad }}, {{ p.provincia }}</p>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-gray-600">No hay destacadas por ahora.</p>
+{% endif %}
+
+<div class="mt-6">
+  <a class="inline-block rounded-xl border px-4 py-2 hover:bg-gray-100" href="{% url 'propiedades_listado' %}">Ver todas</a>
+</div>
+{% endblock %}

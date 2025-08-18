@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Cerca mío{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between">
+  <h1 class="text-xl font-semibold mb-3">Propiedades cercanas</h1>
+  <button id="btn-near" class="rounded-xl border px-3 py-2 hover:bg-gray-100">Usar mi ubicación</button>
+</div>
+
+<p class="text-sm text-gray-600 mb-2">
+  Radio: {{ r|default:20 }} km
+  {% if lat and lng %} — Centro: {{ lat }}, {{ lng }}{% endif %}
+</p>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {% for p in page_obj.object_list %}
+    <a href="{% url 'propiedad_detalle' p.codigo %}" class="group rounded-2xl border overflow-hidden bg-white hover:shadow">
+      <img src="{{ p.imagen_principal.url }}" alt="{{ p.titulo }}" class="h-48 w-full object-cover group-hover:opacity-95">
+      <div class="p-3">
+        <h2 class="font-semibold line-clamp-1">{{ p.titulo }}</h2>
+        <p class="text-sm text-gray-600">{{ p.precio_display }}</p>
+        <p class="text-xs text-gray-500 mt-1 line-clamp-1">📍 {{ p.direccion }}, {{ p.localidad }}, {{ p.provincia }}</p>
+      </div>
+    </a>
+  {% empty %}
+    <p class="text-gray-600">No hay propiedades a {{ r }} km.</p>
+  {% endfor %}
+</div>
+
+{% block extra_js %}
+<script>
+document.getElementById('btn-near')?.addEventListener('click', function(){
+  if (!navigator.geolocation) { alert('Tu navegador no permite geolocalización.'); return; }
+  navigator.geolocation.getCurrentPosition(function(pos){
+    const lat = pos.coords.latitude.toFixed(6);
+    const lng = pos.coords.longitude.toFixed(6);
+    const r = {{ r|default:20 }};
+    const url = new URL("{% url 'propiedades_cercanas' %}", window.location.origin);
+    url.searchParams.set("lat", lat);
+    url.searchParams.set("lng", lng);
+    url.searchParams.set("r", r);
+    window.location.href = url.toString();
+  }, function(){
+    alert('No pudimos obtener tu ubicación. Podés buscar por localidad o usar el mapa en el detalle.');
+  });
+});
+</script>
+{% endblock %}
+{% endblock %}
