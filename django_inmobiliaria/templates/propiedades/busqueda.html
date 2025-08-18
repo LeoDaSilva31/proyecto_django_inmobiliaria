@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Buscar{% endblock %}
+
 {% block content %}
-<h1 class="text-xl font-semibold mb-3">Resultados de búsqueda</h1>
-<p class="text-sm text-gray-600 mb-2">Buscaste: <strong>{{ q|default:"(vacío)" }}</strong></p>
-{% include "propiedades/_grid_list.html" with page_obj=page_obj %}
+<h1 class="text-xl font-semibold mb-1">Resultados</h1>
+<p class="text-sm muted mb-3">Buscaste: <strong>{{ q|default:"(sin término)" }}</strong></p>
+{% include "propiedades/_filters.html" %}
+{% include "propiedades/_grid_list.html" %}
 {% endblock %}

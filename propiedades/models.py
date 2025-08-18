@@ -13,15 +13,21 @@ def _generar_codigo():
     return f"{letras}{numeros}"
 
 def _to_webp(file_field):
-    if not file_field or not hasattr(file_field, 'file'): return file_field
+    if not file_field or not hasattr(file_field, 'file'):
+        return file_field
     try:
+        from PIL import Image
+        import io
         img = Image.open(file_field).convert("RGB")
         buf = io.BytesIO()
         img.save(buf, format="WEBP", quality=85, method=6)
         buf.seek(0)
         name = file_field.name.rsplit('.', 1)[0] + ".webp"
-        return InMemoryUploadedFile(buf, None, name, "image/webp", buf.getbuffer().nbytes, None)
+        from django.core.files.uploadedfile import InMemoryUploadedFile
+        webp = InMemoryUploadedFile(buf, None, name, "image/webp", buf.getbuffer().nbytes, None)
+        return webp
     except Exception:
+        # Fallback: deja el archivo original (al menos algo se guarda)
         return file_field
 
 class Propiedad(models.Model):

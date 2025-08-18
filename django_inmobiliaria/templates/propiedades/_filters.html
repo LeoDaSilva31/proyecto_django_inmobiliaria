@@ -1,0 +1,37 @@
+<form method="get" class="card p-3 mb-4">
+  <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 text-sm">
+    <select name="operacion" class="select">
+      <option value="">Operación</option>
+      <option value="venta" {% if request.GET.operacion == 'venta' %}selected{% endif %}>Venta</option>
+      <option value="alquiler" {% if request.GET.operacion == 'alquiler' %}selected{% endif %}>Alquiler</option>
+    </select>
+
+    <select name="tipo" class="select">
+      <option value="">Tipo</option>
+      <option value="casa" {% if request.GET.tipo == 'casa' %}selected{% endif %}>Casa</option>
+      <option value="departamento" {% if request.GET.tipo == 'departamento' %}selected{% endif %}>Departamento</option>
+      <option value="ph" {% if request.GET.tipo == 'ph' %}selected{% endif %}>PH</option>
+      <option value="local" {% if request.GET.tipo == 'local' %}selected{% endif %}>Local</option>
+    </select>
+
+    <input name="min" type="number" placeholder="Precio mín." value="{{ request.GET.min }}" class="input" />
+    <input name="max" type="number" placeholder="Precio máx." value="{{ request.GET.max }}" class="input" />
+
+    <select name="habitaciones" class="select">
+      <option value="">Habitaciones</option>
+      {% for n in '12345'|make_list %}
+        <option value="{{ n }}" {% if request.GET.habitaciones == n %}selected{% endif %}>{{ n }}+</option>
+      {% endfor %}
+    </select>
+
+    <label class="inline-flex items-center gap-2">
+      <input type="checkbox" name="mascotas" value="1" {% if request.GET.mascotas %}checked{% endif %}>
+      <span>Acepta mascotas</span>
+    </label>
+  </div>
+
+  <div class="mt-2 flex gap-2">
+    <button class="btn">Aplicar</button>
+    <a href="?" class="btn">Limpiar</a>
+  </div>
+</form>

@@ -1,15 +1,19 @@
 {% extends "base.html" %}
-{% block title %}{{ p.titulo }}{% endblock %}
-{% block content %}
+{% load static %}
 
+{% block title %}{{ p.titulo }}{% endblock %}
+
+{% block content %}
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
   <!-- Galería -->
   <div>
-    <img src="{{ p.imagen_principal.url }}" alt="{{ p.titulo }}" class="w-full h-72 object-cover rounded-2xl border">
+    <img
+      src="{% if p.imagen_principal %}{{ p.imagen_principal.url }}{% else %}{% static 'img/placeholder.webp' %}{% endif %}"
+      alt="{{ p.titulo }}" class="w-full h-72 object-cover rounded-2xl border border-[var(--line)]">
     {% if imagenes %}
       <div class="mt-2 grid grid-cols-5 gap-2">
         {% for img in imagenes %}
-          <img src="{{ img.imagen.url }}" alt="" class="h-20 w-full object-cover rounded-lg border">
+          <img src="{{ img.imagen.url }}" alt="" class="h-20 w-full object-cover rounded-lg border border-[var(--line)]">
         {% endfor %}
       </div>
     {% endif %}
@@ -17,27 +21,27 @@
 
   <!-- Datos -->
   <div>
-    <h1 class="text-2xl font-bold">{{ p.titulo }}</h1>
-    <p class="text-lg text-gray-700 mt-1">{{ p.precio_display }}</p>
+    <h1 class="text-2xl font-semibold">{{ p.titulo }}</h1>
+    <p class="text-lg muted mt-1">{{ p.precio_display }}</p>
 
     <div class="mt-3 flex flex-wrap gap-2 text-sm">
-      <span class="px-2 py-1 rounded-full border">🛏️ {{ p.habitaciones }} hab.</span>
-      <span class="px-2 py-1 rounded-full border">🛁 {{ p.banos }} baño(s)</span>
+      <span class="chip">🛏️ {{ p.habitaciones }} hab.</span>
+      <span class="chip">🛁 {{ p.banos }} baño(s)</span>
       {% if p.cochera %}
-        <span class="px-2 py-1 rounded-full border">🚗 Cochera</span>
+        <span class="chip">🚗 Cochera</span>
       {% else %}
-        <span class="px-2 py-1 rounded-full border bg-gray-100">🚗 No posee cochera</span>
+        <span class="chip">🚗 No posee cochera</span>
       {% endif %}
       {% if p.acepta_mascotas %}
-        <span class="px-2 py-1 rounded-full border">🐶 Acepta mascotas</span>
+        <span class="chip">🐶 Acepta mascotas</span>
       {% else %}
-        <span class="px-2 py-1 rounded-full border bg-gray-100">🐶 No acepta mascotas</span>
+        <span class="chip">🐶 No acepta mascotas</span>
       {% endif %}
-      {% if p.superficie_total %}<span class="px-2 py-1 rounded-full border">📐 {{ p.superficie_total }} m² tot.</span>{% endif %}
-      {% if p.superficie_cubierta %}<span class="px-2 py-1 rounded-full border">🏢 {{ p.superficie_cubierta }} m² cub.</span>{% endif %}
+      {% if p.superficie_total %}<span class="chip">📐 {{ p.superficie_total }} m² tot.</span>{% endif %}
+      {% if p.superficie_cubierta %}<span class="chip">🏢 {{ p.superficie_cubierta }} m² cub.</span>{% endif %}
     </div>
 
-    <p class="mt-3 text-sm text-gray-600">📍 {{ p.direccion }}, {{ p.localidad }}, {{ p.provincia }}, {{ p.pais }}</p>
+    <p class="mt-3 text-sm muted">📍 {{ p.direccion }}, {{ p.localidad }}, {{ p.provincia }}, {{ p.pais }}</p>
 
     <div class="prose max-w-none mt-4">
       <p>{{ p.descripcion|linebreaksbr }}</p>
@@ -49,13 +53,23 @@
 {% if p.latitud and p.longitud %}
   <div class="mt-6">
     <h2 class="font-semibold mb-2">Ubicación</h2>
-    <div id="map" class="h-80 w-full rounded-2xl border"></div>
+    <div id="map" class="h-80 w-full rounded-2xl border border-[var(--line)]"></div>
   </div>
 {% endif %}
 
+<!-- CTA móvil fijo -->
+<div class="fixed inset-x-0 bottom-0 z-40 sm:hidden">
+  <div class="mx-auto max-w-7xl px-3 pb-3">
+    <div class="card shadow p-2 flex gap-2">
+      <a class="btn btn-primary flex-1 text-center"
+         href="https://wa.me/54TU_NUMERO?text=Consulta%20por%20{{ p.codigo }}">WhatsApp</a>
+      <a class="btn flex-1 text-center" href="tel:+54TUNUMERO">Llamar</a>
+    </div>
+  </div>
+</div>
+
 {% block extra_js %}
 {% if p.latitud and p.longitud %}
-  <!-- Leaflet CDN (para dev) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>

@@ -5,6 +5,44 @@ from django.views.decorators.cache import cache_page
 from django.db.models.expressions import RawSQL
 from .models import Propiedad
 from .utils import normalizar_texto
+from django.db.models import Q
+
+def _aplicar_filtros(request, qs):
+    op = request.GET.get("operacion") or ""
+    if op: qs = qs.filter(tipo_operacion=op)
+
+    tipo = request.GET.get("tipo") or ""
+    if tipo: qs = qs.filter(tipo=tipo)
+
+    # Nota: por ahora min/max son numéricos "ciegos" sin moneda.
+    # Futuro: separar por USD/ARS con campos distintos.
+    try:
+        mn = request.GET.get("min")
+        if mn:
+            qs = qs.filter(Q(precio_usd__gte=mn) | Q(precio_pesos__gte=mn))
+    except (TypeError, ValueError):
+        pass
+
+    try:
+        mx = request.GET.get("max")
+        if mx:
+            qs = qs.filter(Q(precio_usd__lte=mx) | Q(precio_pesos__lte=mx))
+    except (TypeError, ValueError):
+        pass
+
+    hab = request.GET.get("habitaciones")
+    if hab:
+        try:
+            qs = qs.filter(habitaciones__gte=int(hab))
+        except ValueError:
+            pass
+
+    if request.GET.get("mascotas"):
+        qs = qs.filter(acepta_mascotas=True)
+
+    return qs
+
+
 
 @cache_page(60*5)
 def home(request):
@@ -14,9 +52,9 @@ def home(request):
 @cache_page(60*5)
 def listado_propiedades(request):
     qs = Propiedad.objects.filter(estado='activa').order_by('-creado')
+    qs = _aplicar_filtros(request, qs)
     page_obj = Paginator(qs, 18).get_page(request.GET.get("page"))
     return render(request, "propiedades/listado.html", {"page_obj": page_obj})
-
 
 @cache_page(60*5)
 def buscar_propiedades(request):
@@ -26,8 +64,10 @@ def buscar_propiedades(request):
     if q_norm:
         for t in q_norm.split():
             qs = qs.filter(search_index__icontains=t)
+    qs = _aplicar_filtros(request, qs)
     page_obj = Paginator(qs.order_by('-creado'), 18).get_page(request.GET.get("page"))
     return render(request, "propiedades/busqueda.html", {"page_obj": page_obj, "q": q_raw})
+
 
 @cache_page(60*5)
 def propiedades_cercanas(request):

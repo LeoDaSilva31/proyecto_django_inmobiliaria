@@ -1,46 +1,80 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es" class="h-full">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}Inmobiliaria{% endblock %}</title>
 
-  <!-- Tailwind (CDN para desarrollo; en prod lo compilamos) -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600&display=swap" rel="stylesheet">
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <!-- Tailwind CDN (para layout/espaciado) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme:{ extend:{ fontFamily:{
+      sans:['Inter','ui-sans-serif','system-ui'],
+      display:['Poppins','Inter','ui-sans-serif']
+    }}}}
+  </script>
+
+  <!-- Estilos globales propios -->
+  <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+
+  <!-- SEO/OG mínimos -->
+  <meta name="description" content="Propiedades en venta y alquiler. Búsqueda rápida, filtros claros y mapa." />
+  <meta property="og:title" content="Inmobiliaria" />
+  <meta property="og:description" content="Encontrá tu próxima propiedad." />
+  <meta property="og:type" content="website" />
+
+  <!-- Icono -->
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}" />
 </head>
-<body class="min-h-full bg-gray-50 text-gray-900">
-  <!-- Top bar -->
-  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b">
+<body class="min-h-full">
+  <!-- Header -->
+  <header class="app-header">
     <div class="mx-auto max-w-7xl px-3 py-2 flex items-center gap-3">
-      <a href="{% url 'home' %}" class="font-bold text-lg">🏠 Inmobiliaria</a>
+      <a href="{% url 'home' %}" class="font-display font-semibold text-lg">Inmobiliaria</a>
+
+      <!-- Buscador -->
       <form action="{% url 'buscar_propiedades' %}" method="get" class="flex-1">
         <div class="flex items-center gap-2">
-          <input name="q" type="search" placeholder="Buscar por zona, tipo, 'acepta mascotas'..."
-                 class="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring" />
-          <button class="rounded-xl border px-3 py-2 hover:bg-gray-100" aria-label="Buscar">🔍</button>
+          <input name="q" type="search" placeholder="Buscar por zona, tipo, 'acepta mascotas'…" class="input" />
+          <button class="btn" aria-label="Buscar">🔍</button>
         </div>
       </form>
-      <a href="{% url 'propiedades_cercanas' %}" class="hidden sm:inline rounded-xl border px-3 py-2 hover:bg-gray-100">Cerca mío</a>
+
+      <a href="{% url 'propiedades_cercanas' %}" class="hidden sm:inline btn btn-ghost">Cerca mío</a>
+
+      <!-- Tema -->
+      <button id="themeToggle" class="ml-2 btn btn-ghost" title="Tema">🌓</button>
     </div>
   </header>
 
-  <!-- Main -->
+  <!-- Contenido -->
   <main class="mx-auto max-w-7xl px-3 py-4">
     {% block content %}{% endblock %}
   </main>
 
   <!-- Footer -->
-  <footer class="mx-auto max-w-7xl px-3 py-8 text-xs text-gray-500">
+  <footer class="app-footer mx-auto max-w-7xl px-3 py-8 text-xs">
     <div class="flex items-center justify-between">
-      <p>© {{ now|default:0|date:"Y" }} Inmobiliaria</p>
-      <!-- Link discreto a login con redirect directo a crear propiedad en el Admin -->
-      <a class="opacity-60 hover:opacity-100"
+      <p>© {% now "Y" %} Inmobiliaria</p>
+      <a class="opacity-70 hover:opacity-100"
          href="{% url 'login' %}?next=/admin/propiedades/propiedad/add/">Administración</a>
     </div>
   </footer>
+
+  <!-- Dark mode simple -->
+  <script>
+    const key='prefers-dark';
+    const setTheme = (d)=>document.documentElement.classList.toggle('dark', d);
+    setTheme(localStorage.getItem(key)==='1');
+    document.getElementById('themeToggle')?.addEventListener('click',()=>{
+      const next = !(localStorage.getItem(key)==='1');
+      localStorage.setItem(key, next?'1':'0'); setTheme(next);
+    });
+  </script>
 
   {% block extra_js %}{% endblock %}
 </body>

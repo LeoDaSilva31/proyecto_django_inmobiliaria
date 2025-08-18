@@ -1,0 +1,23 @@
+{% load static %}
+<a href="{% url 'propiedad_detalle' p.codigo %}" class="card group transition">
+  <div class="relative">
+    <img
+      src="{% if p.imagen_principal %}{{ p.imagen_principal.url }}{% else %}{% static 'img/placeholder.webp' %}{% endif %}"
+      alt="{{ p.titulo }}"
+      class="w-full object-cover group-hover:opacity-95 aspect-16-9">
+    {% if p.destacada %}
+      <span class="chip absolute top-2 left-2">Destacada</span>
+    {% endif %}
+  </div>
+  <div class="p-3">
+    <h3 class="font-semibold clamp-1">{{ p.titulo }}</h3>
+    <p class="text-sm muted">{{ p.precio_display }}</p>
+    <div class="mt-1 flex items-center gap-2 text-xs muted">
+      <span>🛏️ {{ p.habitaciones }}</span>
+      <span>🛁 {{ p.banos }}</span>
+      {% if p.cochera %}<span>🚗 Cochera</span>{% else %}<span class="opacity-70">🚗 No posee</span>{% endif %}
+      {% if p.acepta_mascotas %}<span>🐶 Acepta</span>{% else %}<span class="opacity-70">🐶 No</span>{% endif %}
+    </div>
+    <p class="text-[11px] muted mt-1 clamp-1">📍 {{ p.localidad }}, {{ p.provincia }}</p>
+  </div>
+</a>
