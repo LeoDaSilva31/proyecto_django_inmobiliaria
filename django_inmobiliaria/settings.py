@@ -24,6 +24,8 @@ INSTALLED_APPS = [
     'storages',
     'accounts',
     'propiedades',
+
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
