@@ -130,3 +130,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SECURE_BROWSER_XSS_FILTER = True
 SESSION_COOKIE_SECURE = USE_PROD
 CSRF_COOKIE_SECURE = USE_PROD
+
+
+COMPANY_NAME = "Inmobiliaria Pérez"
+COMPANY_PHONE_DISPLAY = "+54 11 6804-4215"
+COMPANY_PHONE_WA = "541168044215"
+COMPANY_EMAIL = "hola@tuinmobiliaria.com"
+COMPANY_ADDRESS = "Brown 3950, Quilmes, Buenos Aires, Argentina"
+COMPANY_INSTAGRAM = "https://instagram.com/tuinmobiliaria"
+COMPANY_FACEBOOK  = "https://facebook.com/tuinmobiliaria"
+COMPANY_X         = "https://x.com/tuinmobiliaria"

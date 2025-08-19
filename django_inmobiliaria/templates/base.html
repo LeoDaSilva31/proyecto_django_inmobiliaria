@@ -17,6 +17,15 @@
       display:['Poppins','Inter','ui-sans-serif']
     }}}}
   </script>
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem('prefers-dark') === '1') {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (_) {}
+    })();
+  </script>
 
   <!-- Estilos globales propios -->
   <link rel="stylesheet" href="{% static 'css/theme.css' %}">
@@ -33,23 +42,44 @@
 <body class="min-h-full">
   <!-- Header -->
   <header class="app-header">
-    <div class="mx-auto max-w-7xl px-3 py-2 flex items-center gap-3">
-      <a href="{% url 'home' %}" class="font-display font-semibold text-lg">Inmobiliaria</a>
+    <div class="mx-auto max-w-7xl px-3 py-4 flex items-center gap-4">
+      <!-- Marca (logo + nombre) -->
+      <a href="{% url 'home' %}" class="flex items-center gap-3">
+        <!-- Colocá tu logo en static/img/logo.svg -->
+        <img src="{% static 'img/logo.png' %}" alt="Inmobiliaria" class="h-10 w-auto">
+        <span class="font-display font-semibold text-2xl">Inmobiliaria</span>
+      </a>
 
-      <!-- Buscador -->
-      <form action="{% url 'buscar_propiedades' %}" method="get" class="flex-1">
-        <div class="flex items-center gap-2">
-          <input name="q" type="search" placeholder="Buscar por zona, tipo, 'acepta mascotas'…" class="input" />
-          <button class="btn" aria-label="Buscar">🔍</button>
-        </div>
-      </form>
+      <!-- Navegación derecha -->
+      <nav class="ml-auto flex items-center gap-2">
+        <a href="{% url 'propiedades_listado' %}" class="btn btn-ghost hidden sm:inline-flex">
+          Todas las Propiedades
+        </a>
 
-      <a href="{% url 'propiedades_cercanas' %}" class="hidden sm:inline btn btn-ghost">Cerca mío</a>
 
-      <!-- Tema -->
-      <button id="themeToggle" class="ml-2 btn btn-ghost" title="Tema">🌓</button>
+        <a href="{% url 'nosotros' %}" class="btn btn-ghost hidden sm:inline-flex">
+          Nosotros
+        </a>
+
+
+        <!-- Buscar (lupa) — icono SVG en silueta, contrasta por currentColor -->
+        <a href="{% url 'buscar_propiedades' %}" class="btn btn-ghost" aria-label="Buscar" title="Buscar">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </a>
+
+        <!-- Tema -->
+        <button id="themeToggle" class="btn btn-ghost" title="Cambiar tema" aria-label="Cambiar tema">
+          🌓
+        </button>
+      </nav>
     </div>
   </header>
+
 
   <!-- Contenido -->
   <main class="mx-auto max-w-7xl px-3 py-4">

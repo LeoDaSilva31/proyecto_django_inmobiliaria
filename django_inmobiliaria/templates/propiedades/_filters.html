@@ -1,37 +1,111 @@
-<form method="get" class="card p-3 mb-4">
-  <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 text-sm">
-    <select name="operacion" class="select">
-      <option value="">Operación</option>
-      <option value="venta" {% if request.GET.operacion == 'venta' %}selected{% endif %}>Venta</option>
-      <option value="alquiler" {% if request.GET.operacion == 'alquiler' %}selected{% endif %}>Alquiler</option>
-    </select>
+{# templates/propiedades/_filters.html #}
 
-    <select name="tipo" class="select">
-      <option value="">Tipo</option>
-      <option value="casa" {% if request.GET.tipo == 'casa' %}selected{% endif %}>Casa</option>
-      <option value="departamento" {% if request.GET.tipo == 'departamento' %}selected{% endif %}>Departamento</option>
-      <option value="ph" {% if request.GET.tipo == 'ph' %}selected{% endif %}>PH</option>
-      <option value="local" {% if request.GET.tipo == 'local' %}selected{% endif %}>Local</option>
-    </select>
+{# --- Chips de filtros aplicados (cada chip remueve sólo ese filtro) --- #}
+{% if applied_filters %}
+  <div class="flex flex-wrap gap-2 mb-3">
+    {% for f in applied_filters %}
+      <form method="get" class="inline">
+        {# reenviamos todos los params MENOS el del chip actual #}
+        {% for k, v in params.items %}
+          {% if k != f.key and v %}
+            <input type="hidden" name="{{ k }}" value="{{ v }}">
+          {% endif %}
+        {% endfor %}
+        <button class="chip hover:brightness-95" type="submit" title="Quitar filtro">
+          {{ f.label }}{% if f.value %}: {{ f.value }}{% endif %} ×
+        </button>
+      </form>
+    {% endfor %}
 
-    <input name="min" type="number" placeholder="Precio mín." value="{{ request.GET.min }}" class="input" />
-    <input name="max" type="number" placeholder="Precio máx." value="{{ request.GET.max }}" class="input" />
-
-    <select name="habitaciones" class="select">
-      <option value="">Habitaciones</option>
-      {% for n in '12345'|make_list %}
-        <option value="{{ n }}" {% if request.GET.habitaciones == n %}selected{% endif %}>{{ n }}+</option>
-      {% endfor %}
-    </select>
-
-    <label class="inline-flex items-center gap-2">
-      <input type="checkbox" name="mascotas" value="1" {% if request.GET.mascotas %}checked{% endif %}>
-      <span>Acepta mascotas</span>
-    </label>
+    {# limpiar filtros (conserva q) #}
+    <form method="get" class="inline">
+      {% if q %}
+        <input type="hidden" name="q" value="{{ q }}">
+      {% endif %}
+      <button class="chip hover:brightness-95" type="submit" title="Limpiar filtros">
+        Limpiar filtros
+      </button>
+    </form>
   </div>
+{% endif %}
 
-  <div class="mt-2 flex gap-2">
-    <button class="btn">Aplicar</button>
-    <a href="?" class="btn">Limpiar</a>
+{# --- Formulario de filtros (GET, acumulativo) --- #}
+<form method="get" action="{% url 'buscar_propiedades' %}" class="card p-4 mb-4">
+  <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
+
+    <div class="md:col-span-2">
+      <label class="block text-sm muted mb-1">Buscar</label>
+      <input class="input" type="text" name="q" placeholder="Ej.: local, depto 3 amb, garage"
+             value="{{ q|default:'' }}">
+    </div>
+
+    <div>
+      <label class="block text-sm muted mb-1">Operación</label>
+      <select class="select" name="operacion">
+        <option value="">Todas</option>
+        {% for val, label in operaciones %}
+          <option value="{{ val }}" {% if params.operacion == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm muted mb-1">Tipo</label>
+      <select class="select" name="tipo">
+        <option value="">Todos</option>
+        {% for val, label in tipos %}
+          <option value="{{ val }}" {% if params.tipo == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    {# NUEVO: Localidad (opciones dinámicas) #}
+    <div>
+      <label class="block text-sm muted mb-1">Localidad</label>
+      <select class="select" name="localidad">
+        <option value="">Todas</option>
+        {% for loc in localidades %}
+          <option value="{{ loc }}" {% if params.localidad == loc %}selected{% endif %}>{{ loc }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    {# Inputs numéricos chicos: envolvemos en un contenedor de ancho fijo #}
+    <div style="max-width: 9rem;">
+      <label class="block text-sm muted mb-1">Habitaciones (mín.)</label>
+      <input class="input" type="number" min="0" name="habitaciones" value="{{ params.habitaciones|default:'' }}">
+    </div>
+
+    {# Quitado: Precio mín. #}
+    {# <div> ... </div> #}
+
+    <div style="max-width: 9rem;">
+      <label class="block text-sm muted mb-1">Precio máx.</label>
+      <input class="input" type="number" min="0" name="max" value="{{ params.max|default:'' }}">
+    </div>
+
+    <div class="md:col-span-2 flex items-center gap-3">
+      <label class="inline-flex items-center gap-2">
+        <input type="checkbox" name="mascotas" value="1" {% if params.mascotas %}checked{% endif %}>
+        <span>Acepta mascotas</span>
+      </label>
+    </div>
+
+    <div class="md:col-span-2 flex items-center gap-3">
+      <button class="btn btn-primary" type="submit">Aplicar</button>
+
+      {# Limpiar rápido (conserva q) #}
+      <button class="btn" type="submit" name="__clear" value="1"
+              onclick="
+                const form=this.form;
+                const keepQ=form.querySelector('input[name=q]')?.value||'';
+                [...form.elements].forEach(el=>{
+                  if(el.name && el.name!=='q'){ el.disabled=true;}
+                });
+                if(keepQ===''){ form.querySelector('input[name=q]')?.remove(); }
+              ">
+        Limpiar filtros
+      </button>
+    </div>
   </div>
 </form>

@@ -2,8 +2,9 @@
 {% block title %}Buscar{% endblock %}
 
 {% block content %}
-<h1 class="text-xl font-semibold mb-1">Resultados</h1>
+
 <p class="text-sm muted mb-3">Buscaste: <strong>{{ q|default:"(sin término)" }}</strong></p>
+
 {% include "propiedades/_filters.html" %}
 {% include "propiedades/_grid_list.html" %}
 {% endblock %}
