@@ -18,15 +18,19 @@ USE_I18N = True
 USE_TZ = True
 
 INSTALLED_APPS = [
-    'whitenoise.runserver_nostatic',
-    'django.contrib.admin','django.contrib.auth','django.contrib.contenttypes',
-    'django.contrib.sessions','django.contrib.messages','django.contrib.staticfiles',
-    'storages',
+    'whitenoise.runserver_nostatic',   
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',      
+    'storages',                       
     'accounts',
     'propiedades',
-
     'django.contrib.humanize',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -71,6 +75,10 @@ if USE_PROD:
             'PASSWORD': config('DB_PASSWORD'),
             'HOST':     config('DB_HOST'),
             'PORT':     config('DB_PORT', default='5432'),
+            'OPTIONS': {
+                'sslmode': 'require',
+            },
+            'CONN_MAX_AGE': 60,
         }
     }
 else:
@@ -93,22 +101,51 @@ MEDIA_ROOT  = BASE_DIR / 'media'
 
 # STORAGES por entorno
 if USE_PROD and USE_S3:
-    from .storages import MediaStorage, StaticStorage
-    STORAGES = {
-        "default":     {"BACKEND": "django_inmobiliaria.storages.MediaStorage"},
-        "staticfiles": {"BACKEND": "django_inmobiliaria.storages.StaticStorage"},
-    }
-    AWS_S3_REGION_NAME       = config('AWS_S3_REGION_NAME', default='sa-east-1')
-    AWS_MEDIA_BUCKET         = config('AWS_MEDIA_BUCKET', default=config('AWS_STORAGE_BUCKET_NAME', default=None))
-    AWS_STATIC_BUCKET        = config('AWS_STATIC_BUCKET', default=None)
-    AWS_MEDIA_CUSTOM_DOMAIN  = config('AWS_MEDIA_CUSTOM_DOMAIN', default=None)
+
+    AWS_DEFAULT_ACL = None                     
+    AWS_S3_BUCKET_OBJECT_OWNERSHIP = "BucketOwnerEnforced"  
+    AWS_QUERYSTRING_AUTH = False               
+
+
+    # === S3 Configuración
+    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+    AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME')
+    
+    # Asignar los nombres de los buckets
+    AWS_STATIC_BUCKET_NAME = config('AWS_STATIC_BUCKET_NAME')
+    AWS_MEDIA_BUCKET_NAME = config('AWS_MEDIA_BUCKET_NAME')
+
+    # Dominios
     AWS_STATIC_CUSTOM_DOMAIN = config('AWS_STATIC_CUSTOM_DOMAIN', default=None)
-else:
+    AWS_MEDIA_CUSTOM_DOMAIN = config('AWS_MEDIA_CUSTOM_DOMAIN', default=None)
+
+    
+    from .storages_s3 import MediaRootS3Boto3Storage, StaticRootS3Boto3Storage
+
+    # Configuración de los "storages"
     STORAGES = {
-        "default":     {"BACKEND": "django.core.files.storage.FileSystemStorage"},
-        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+        "default": {"BACKEND": "django_inmobiliaria.storages_s3.MediaRootS3Boto3Storage"},
+        "staticfiles": {"BACKEND": "django_inmobiliaria.storages_s3.StaticRootS3Boto3Storage"},
     }
 
+    # === URLS de los archivos
+    if AWS_STATIC_CUSTOM_DOMAIN:
+        STATIC_URL = f"https://{AWS_STATIC_CUSTOM_DOMAIN}/static/"
+    else:
+        STATIC_URL = f"https://{AWS_STATIC_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/static/"
+
+    if AWS_MEDIA_CUSTOM_DOMAIN:
+        MEDIA_URL = f"https://{AWS_MEDIA_CUSTOM_DOMAIN}/media/"
+    else:
+        MEDIA_URL = f"https://{AWS_MEDIA_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/media/"
+
+else:
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    
+    }
 # === Auth: usuario custom (DNI)
 AUTH_USER_MODEL = "accounts.User"
 LOGIN_URL = "login"

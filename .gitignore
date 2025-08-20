@@ -5,3 +5,39 @@ db.sqlite3
 .env
 /staticfiles/
 /media/
+
+# ==== local/dev ====
+.venv/
+venv/
+.env
+.env.*
+*.pyc
+__pycache__/
+.idea/
+.vscode/
+
+# ==== build/collect ====
+staticfiles/
+media/
+
+# ==== OS ====
+.DS_Store
+Thumbs.db
+
+# ==== local/dev ====
+.venv/
+venv/
+.env
+.env.*
+*.pyc
+__pycache__/
+.idea/
+.vscode/
+
+# ==== build/collect ====
+staticfiles/
+media/
+
+# ==== OS ====
+.DS_Store
+Thumbs.db
