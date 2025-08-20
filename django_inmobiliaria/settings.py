@@ -179,3 +179,6 @@ COMPANY_ADDRESS = "Brown 3950, Quilmes, Buenos Aires, Argentina"
 COMPANY_INSTAGRAM = "https://instagram.com/tuinmobiliaria"
 COMPANY_FACEBOOK  = "https://facebook.com/tuinmobiliaria"
 COMPANY_X         = "https://x.com/tuinmobiliaria"
+
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
