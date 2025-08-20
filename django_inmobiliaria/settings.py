@@ -182,3 +182,5 @@ COMPANY_X         = "https://x.com/tuinmobiliaria"
 
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# settings.py (solo en prod)
+SECURE_SSL_REDIRECT = True
