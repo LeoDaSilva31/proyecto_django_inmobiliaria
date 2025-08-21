@@ -6,6 +6,15 @@ from django.conf.urls.static import static
 from django.http import HttpResponse
 
 
+from django.contrib.sitemaps.views import sitemap
+from django_inmobiliaria.sitemaps import StaticViewSitemap
+
+sitemaps = {
+    "static": StaticViewSitemap,
+}
+
+
+
 def robots_txt(_request):
     content = (
         "User-agent: *\n"
@@ -28,6 +37,7 @@ urlpatterns = [
     path("buscar/", buscar_propiedades, name="buscar_propiedades"),
     path("nosotros/", nosotros, name="nosotros"),
     path("robots.txt", robots_txt, name="robots_txt"),
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
 ]
 
 

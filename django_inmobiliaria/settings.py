@@ -29,6 +29,9 @@ INSTALLED_APPS = [
     'accounts',
     'propiedades',
     'django.contrib.humanize',
+
+    'django.contrib.sitemaps',
+
 ]
 
 
