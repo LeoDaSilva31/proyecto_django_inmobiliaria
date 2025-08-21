@@ -17,6 +17,8 @@
       display:['Poppins','Inter','ui-sans-serif']
     }}}}
   </script>
+
+  <!-- Preferencia de tema -->
   <script>
     (function () {
       try {
@@ -38,6 +40,9 @@
 
   <!-- Icono -->
   <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}" />
+
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
 </head>
 <body class="min-h-full">
   <!-- Header -->
@@ -56,17 +61,15 @@
           Todas las Propiedades
         </a>
 
-
         <a href="{% url 'nosotros' %}" class="btn btn-ghost hidden sm:inline-flex">
           Nosotros
         </a>
 
-
-        <!-- Buscar (lupa) — icono SVG en silueta, contrasta por currentColor -->
+        <!-- Buscar (lupa) -->
         <a href="{% url 'buscar_propiedades' %}" class="btn btn-ghost" aria-label="Buscar" title="Buscar">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+               viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="11" cy="11" r="7"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
@@ -74,21 +77,25 @@
 
         <!-- Tema -->
         <button id="themeToggle" class="btn btn-ghost" title="Cambiar tema" aria-label="Cambiar tema">
-                  🌓
-                </button>
-                <button id="mobileNavToggle"
+          🌓
+        </button>
+
+        <!-- Menú móvil (hamburguesa con trazos de alto contraste) -->
+        <button id="mobileNavToggle"
                 class="btn btn-ghost sm:hidden"
                 aria-controls="mobileNav"
                 aria-expanded="false"
                 aria-label="Abrir menú">
-          <!-- ícono “hamburguesa” -->
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M4 6h16M4 12h16M4 18h16"/>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"
+               viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="4" y1="6"  x2="20" y2="6"></line>
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="18" x2="20" y2="18"></line>
           </svg>
         </button>
-
       </nav>
     </div>
+
     <!-- Panel móvil -->
     <div id="mobileNav" class="sm:hidden mobile-nav border-t" hidden>
       <nav class="px-3 py-3 flex flex-col gap-2">
@@ -97,9 +104,7 @@
         <a href="{% url 'buscar_propiedades' %}" class="btn btn-ghost">Buscar</a>
       </nav>
     </div>
-
   </header>
-
 
   <!-- Contenido -->
   <main class="mx-auto max-w-7xl px-3 py-4">
@@ -125,6 +130,8 @@
       localStorage.setItem(key, next?'1':'0'); setTheme(next);
     });
   </script>
+
+  <!-- Toggle menú móvil -->
   <script>
     const $btn = document.getElementById('mobileNavToggle');
     const $panel = document.getElementById('mobileNav');
@@ -141,7 +148,6 @@
       });
     }
   </script>
-
 
   {% block extra_js %}{% endblock %}
 </body>
