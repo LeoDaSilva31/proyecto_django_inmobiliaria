@@ -7,12 +7,13 @@ from django.http import HttpResponse
 
 
 from django.contrib.sitemaps.views import sitemap
-from django_inmobiliaria.sitemaps import StaticViewSitemap
+from propiedades.sitemaps import PropiedadSitemap, StaticViewSitemap
+
 
 sitemaps = {
     "static": StaticViewSitemap,
+    "propiedades": PropiedadSitemap,
 }
-
 
 
 def robots_txt(_request):

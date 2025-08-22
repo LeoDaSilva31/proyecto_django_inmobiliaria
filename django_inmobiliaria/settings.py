@@ -32,6 +32,7 @@ INSTALLED_APPS = [
 
     'django.contrib.sitemaps',
 
+
 ]
 
 
@@ -207,9 +208,11 @@ SESSION_COOKIE_HTTPONLY = True  # explícito (default ya es True)
 
 
 if FORCE_HTTPS:
+    SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+
 else:
     SECURE_HSTS_SECONDS = 0
     SECURE_HSTS_INCLUDE_SUBDOMAINS = False
