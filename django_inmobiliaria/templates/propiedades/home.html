@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature/security-seo-indexing
 {% block title %}Desarrollos LeoDS — Páginas web a medida para tu negocio{% endblock %}
 
 {% block content %}
 
+<<<<<<< HEAD
 <!-- Hero comercial -->
 <section class="rounded-xl p-6 sm:p-10 mb-8 bg-gradient-to-b from-sky-50/60 to-transparent dark:from-slate-800/40 border border-[var(--line)]">
   <h1 class="font-display text-3xl sm:text-4xl font-semibold leading-tight">
@@ -13,6 +17,30 @@
       Vos lo imaginás, nosotros lo publicamos.
     </span>
   </h1>
+=======
+<!-- Hero / Branding -->
+<section class="rounded-xl p-6 mb-8 shadow-md"
+         style="background:color-mix(in srgb, var(--card) 96%, transparent);">
+  <h1 class="font-display text-3xl sm:text-4xl font-bold mb-2">
+    Páginas web a medida para tu negocio
+  </h1>
+  <p class="text-base sm:text-lg muted max-w-2xl">
+    Sitios rápidos, seguros y listos para aparecer en Google. Desarrollo, SEO técnico y performance.
+  </p>
+
+  <div class="flex flex-wrap items-center gap-3 mt-4">
+    <a class="btn" href="https://api.whatsapp.com/send?phone=541168044215&text={{ 'Hola LeoDS, quiero una web a medida para mi negocio.'|urlencode }}"
+       target="_blank" rel="noopener">
+      Pedir presupuesto por WhatsApp
+    </a>
+    <a class="btn btn-ghost" href="{% url 'propiedades_listado' %}">
+      Ver ejemplos del sitio
+    </a>
+  </div>
+</section>
+
+<h2 class="text-lg font-semibold mb-3">Propiedades destacadas</h2>
+>>>>>>> feature/security-seo-indexing
 
   <p class="mt-4 text-base sm:text-lg muted max-w-3xl">
     Páginas web a medida, rápidas, seguras y optimizadas para Google.
