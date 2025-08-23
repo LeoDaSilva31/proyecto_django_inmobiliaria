@@ -1,17 +1,16 @@
 /* =============================
    THEME NEUTRO · GRAYSCALE + GLASS + MOTION
-   (opción alternativa para tu sitio)
-   - Paleta en escala de grises (sin color) con transparencias sutiles
-   - Efectos de vidrio (glassmorphism) y micro‑interacciones
-   - Animaciones suaves y utilidades .reveal
-   - Compatibilidad con tus clases actuales (.btn, .card, .chip, .app-header, .map-frame, .gallery-thumb, etc.)
+   - Paleta en escala de grises con transparencias
+   - Glassmorphism + micro-interacciones
+   - Accesibilidad (contraste + focos visibles)
+   - Compatible con tus clases actuales (.btn, .card, .chip, .app-header, .map-frame, etc.)
    ============================= */
 
 /* ===== Tokens (modo claro / oscuro) ===== */
 :root {
-  /* Grises base */
+  /* Colores base */
   --bg:        #F7F8FA;   /* fondo */
-  --card:      #FFFFFF;   /* superficies sólidas */
+  --card:      #FFFFFF;   /* superficies */
   --txt:       #121212;   /* texto principal */
   --muted:     #6B7280;   /* texto secundario */
   --line:      #E6E8EE;   /* bordes */
@@ -20,13 +19,20 @@
   --glass-bg:  color-mix(in srgb, var(--card) 62%, transparent);
   --glass-brd: color-mix(in srgb, #9AA1AF 30%, transparent);
 
-  /* Interacción/foco (neutro alto contraste) */
-  --accent:    #1F2937;   /* sin color, grafito */
+  /* Interacción / foco */
+  --accent:    #1F2937;   /* gris grafito */
   --focus:     #111111;
 
   /* Sombras */
   --elev-1: 0 2px 10px rgba(0, 0, 0, .06);
   --elev-2: 0 12px 28px rgba(0, 0, 0, .12);
+
+  /* Íconos */
+  --icon:      var(--txt);
+
+  /* Botón primario */
+  --btn-primary-bg: #111827; /* gray-900 */
+  --btn-primary-fg: #ffffff;
 }
 
 html.dark {
@@ -44,6 +50,11 @@ html.dark {
 
   --elev-1: 0 2px 10px rgba(0, 0, 0, .35);
   --elev-2: 0 16px 40px rgba(0, 0, 0, .50);
+
+  --icon:      #F3F4F6;
+
+  --btn-primary-bg: #111827;
+  --btn-primary-fg: #ffffff;
 }
 
 /* ===== Base ===== */
@@ -72,13 +83,22 @@ a:hover { text-decoration: none; filter: brightness(0.98); }
 
 .app-footer { border-top:1px solid var(--line); color:var(--muted); }
 
-/* ===== Controles ===== */
-.input, .select, input[type="text"], input[type="number"], input[type="email"], textarea {
-  width: 100%; border: 1px solid var(--line); background: var(--card); color: var(--txt);
-  border-radius: 0.8rem; padding: 0.65rem 0.85rem; outline: none;
+/* ===== Controles (inputs/select/textarea) ===== */
+.input, .select,
+input[type="text"], input[type="number"], input[type="email"], input[type="search"],
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--txt);
+  border-radius: 0.8rem;
+  padding: 0.65rem 0.85rem;
+  outline: none;
   transition: box-shadow .2s ease, border-color .2s ease, background .2s ease;
 }
-.input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--muted) 80%, transparent); }
+.input::placeholder, textarea::placeholder {
+  color: color-mix(in srgb, var(--muted) 80%, transparent);
+}
 .input:focus, .select:focus, input:focus, textarea:focus {
   border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
@@ -89,16 +109,19 @@ a:hover { text-decoration: none; filter: brightness(0.98); }
   outline: 2px solid var(--focus); outline-offset: 2px;
 }
 
-/* ===== Botones con ripple neutro ===== */
+/* ===== Botones ===== */
 .btn {
   position: relative; overflow: hidden;
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-  border: 1px solid var(--line); background: transparent; color: var(--txt);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--card) 85%, transparent);
+  color: var(--txt);
   border-radius: 0.8rem; padding: 0.6rem 0.95rem; cursor: pointer;
   transition: transform .06s ease, filter .15s ease, background .2s ease, border-color .2s ease;
 }
 .btn:hover { background: color-mix(in srgb, var(--bg) 75%, transparent); }
 .btn:active { transform: translateY(1px); }
+.btn:disabled, .btn[disabled] { opacity:.55; cursor: not-allowed; }
 
 /* Ripple */
 .btn::after {
@@ -108,14 +131,46 @@ a:hover { text-decoration: none; filter: brightness(0.98); }
 }
 .btn:active::after { opacity: 1; transform: scale(1.1); }
 
-.btn-primary { background: var(--accent); border-color: transparent; color: #fff; }
-.btn-primary:hover { filter: brightness(0.97); }
-.btn-outline { border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); color: var(--accent); }
+/* Variantes */
+.btn-primary {
+  background: var(--btn-primary-bg) !important;
+  color: var(--btn-primary-fg) !important;
+  border-color: transparent !important;
+  box-shadow: 0 1px 0 rgba(0,0,0,.2);
+}
+.btn-primary:hover { filter: brightness(1.05); }
+.btn-outline { border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); color: var(--accent); background: transparent; }
 .btn-outline:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
 .btn-ghost { background: transparent; }
 .btn-ghost:hover { background: color-mix(in srgb, var(--bg) 85%, transparent); }
+
 .btn-sm { padding: .38rem .6rem; border-radius: .55rem; font-size: .92rem; }
 .btn-lg { padding: .85rem 1.25rem; border-radius: .95rem; font-weight: 600; }
+
+/* Hace que los SUBMIT (ej. “Aplicar”) se vean primarios sin tocar plantillas */
+.btn[type="submit"], input[type="submit"].btn {
+  background: var(--btn-primary-bg) !important;
+  color: var(--btn-primary-fg) !important;
+  border-color: transparent !important;
+}
+
+/* ===== Iconografía y botón hamburguesa ===== */
+#mobileNavToggle { border: 1px solid var(--line); border-radius: .7rem; }
+#mobileNavToggle:hover { background: color-mix(in srgb, var(--bg) 85%, transparent); }
+#mobileNavToggle svg { width: 1.5rem; height: 1.5rem; display:block; }
+#mobileNavToggle svg line,
+#mobileNavToggle svg path {
+  stroke: var(--icon);
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  fill: none;
+}
+
+/* (Opcional) un poco más de presencia en botones del header en mobile */
+@media (max-width: 640px) {
+  .app-header .btn-ghost { opacity: .95; }
+  .app-header .btn-ghost:hover { background: color-mix(in srgb, var(--bg) 85%, transparent); }
+}
 
 /* ===== Tarjetas (levitación + glass opcional) ===== */
 .card {
@@ -125,14 +180,19 @@ a:hover { text-decoration: none; filter: brightness(0.98); }
   animation: fadeUp .5s ease both;
 }
 .card:hover { box-shadow: var(--elev-2); transform: translateY(-4px); }
-.card--glass { background: var(--glass-bg); backdrop-filter: blur(10px) saturate(120%); -webkit-backdrop-filter: blur(10px) saturate(120%); border-color: var(--glass-brd); }
+.card--glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  border-color: var(--glass-brd);
+}
 
 /* Imagen en grises por defecto con retorno a color al hover */
 .card img { filter: grayscale(25%); transition: filter .35s ease, transform .35s ease; }
 .card:hover img { filter: grayscale(0%); transform: scale(1.01); }
 .no-gray img { filter: none !important; }
 
-/* Chips / Badges neutros */
+/* ===== Chips / Badges ===== */
 .chip, .badge {
   display: inline-flex; align-items: center; gap: .35rem;
   font-size: 11px; font-weight: 600; letter-spacing: .2px;
@@ -142,7 +202,7 @@ a:hover { text-decoration: none; filter: brightness(0.98); }
 }
 .badge--accent { background: color-mix(in srgb, #111 8%, var(--card)); color: var(--accent); border-color: color-mix(in srgb, #111 22%, var(--line)); }
 
-/* Tipografía utilitaria */
+/* ===== Tipografía utilitaria ===== */
 .muted { color: var(--muted); }
 .font-display { font-family: "Poppins", "Inter", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
 .clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
@@ -155,7 +215,11 @@ img { max-width: 100%; height: auto; }
 
 /* ===== Paginación ===== */
 .pagination { display: flex; align-items: center; gap: .45rem; }
-.pagination a, .pagination span { border:1px solid var(--line); background: var(--card); padding: .45rem .75rem; border-radius: .65rem; transition: background .2s ease, border-color .2s ease; }
+.pagination a, .pagination span {
+  border:1px solid var(--line); background: var(--card);
+  padding: .45rem .75rem; border-radius: .65rem;
+  transition: background .2s ease, border-color .2s ease;
+}
 .pagination .is-active { border-color: #2A2A2A; color: #2A2A2A; font-weight: 600; }
 
 /* ===== Bloques de ubicación (detalle) ===== */
@@ -166,17 +230,28 @@ img { max-width: 100%; height: auto; }
 .ubox .ubox-body > ul { margin: 0; }
 
 /* Marco de mapa */
-.map-frame { aspect-ratio: 4/3; min-height: 160px; width: 100%; border: 1px solid var(--line); border-radius: .8rem; overflow: hidden; background: var(--card); transition: box-shadow .25s ease, transform .25s ease; }
+.map-frame {
+  aspect-ratio: 4/3; min-height: 160px; width: 100%;
+  border: 1px solid var(--line); border-radius: .8rem; overflow: hidden; background: var(--card);
+  transition: box-shadow .25s ease, transform .25s ease;
+}
 .map-frame:hover { box-shadow: var(--elev-2); transform: translateY(-2px); }
 .map-frame iframe { display: block; width: 100%; height: 100%; border: 0; background: var(--card); }
 
 /* ===== Tablas ===== */
-.table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); border:1px solid var(--line); border-radius: .8rem; overflow: hidden; }
-.table thead th { text-align: left; font-weight: 600; color: var(--muted); background: color-mix(in srgb, var(--card) 90%, transparent); padding: .8rem .9rem; border-bottom: 1px solid var(--line); }
+.table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  background: var(--card); border:1px solid var(--line); border-radius: .8rem; overflow: hidden;
+}
+.table thead th {
+  text-align: left; font-weight: 600; color: var(--muted);
+  background: color-mix(in srgb, var(--card) 90%, transparent);
+  padding: .8rem .9rem; border-bottom: 1px solid var(--line);
+}
 .table tbody td { padding: .8rem .9rem; border-bottom: 1px solid var(--line); }
 .table tbody tr:hover { background: color-mix(in srgb, var(--bg) 82%, transparent); }
 
-/* ===== Utilidades de animación / efectos ===== */
+/* ===== Animaciones / efectos ===== */
 @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pulseSoft { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
@@ -211,16 +286,16 @@ img { max-width: 100%; height: auto; }
   * { transition: none !important; animation: none !important; }
 }
 
+/* ===== Navegación móvil ===== */
 .mobile-nav{ background: var(--card); border-color: var(--line); }
 .mobile-nav a.btn{ justify-content: flex-start; }
 
-
-/* Tarjeta de propiedad con alturas consistentes */
+/* ===== Cards de propiedades (altura uniforme) ===== */
 .property-card{ display:flex; flex-direction:column; height:100%; }
 
 /* Contenedor de miniatura con ratio fijo */
 .property-card .thumb{
-  aspect-ratio: 16/10; /* similar a 1.6:1, podés cambiarlo a 4/3 si preferís */
+  aspect-ratio: 16/10;
   overflow:hidden; background: var(--bg);
   border-bottom: 1px solid var(--line);
 }
@@ -228,86 +303,6 @@ img { max-width: 100%; height: auto; }
   width:100%; height:100%; object-fit:cover; display:block;
 }
 
-/* Contenido elástico + botón al pie */
+/* Contenido elástico + CTA al pie */
 .property-card .content{ display:flex; flex-direction:column; gap:.5rem; padding:1rem; flex:1 1 auto; }
 .property-card .cta{ margin-top:auto; }
-
-/* Clamp de 2 líneas para títulos más largos */
-.clamp-2{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-
-/* --- Cards de propiedades con altura uniforme --- */
-.property-card { display: flex; flex-direction: column; height: 100%; }
-
-/* Miniatura con ratio fijo: evita saltos por imágenes de diferentes tamaños */
-.property-card .thumb {
-  aspect-ratio: 16/10;         /* Cambiá a 4/3 o 3/2 si tus fotos lo piden */
-  overflow: hidden;
-  background: var(--bg);
-  border-bottom: 1px solid var(--line);
-}
-.property-card .thumb > img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Cuerpo elástico y CTA abajo */
-.property-card .content {
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
-  padding: 1rem;
-  flex: 1 1 auto;              /* Esto empuja la CTA hacia el fondo */
-}
-.property-card .cta { margin-top: auto; }
-
-/* Clamps por si no los tenías ya */
-.clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-.clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-
-/* ===== Correcciones de contraste e iconografía ===== */
-
-/* Color base para íconos (incluye hamburguesa y lupa) */
-:root { --icon: var(--txt); }
-html.dark { --icon: #F3F4F6; }
-
-/* Botón del menú móvil con trazo nítido y borde suave */
-#mobileNavToggle { border: 1px solid var(--line); border-radius: .7rem; }
-#mobileNavToggle:hover { background: color-mix(in srgb, var(--bg) 85%, transparent); }
-#mobileNavToggle svg { width: 1.5rem; height: 1.5rem; }
-#mobileNavToggle svg line,
-#mobileNavToggle svg path {
-  stroke: var(--icon);
-  stroke-width: 2.25;
-  stroke-linecap: round;
-  fill: none;
-}
-
-/* Botón primario consistente en claro/oscuro (arregla "Aplicar" en filtros) */
-:root {
-  --btn-primary-bg: #111827; /* gray-900 */
-  --btn-primary-fg: #ffffff;
-}
-html.dark {
-  --btn-primary-bg: #111827; /* mantenemos oscuro para contrastar en fondos oscuros */
-  --btn-primary-fg: #ffffff;
-}
-.btn-primary {
-  background: var(--btn-primary-bg) !important;
-  color: var(--btn-primary-fg) !important;
-  border-color: transparent !important;
-  box-shadow: 0 1px 0 rgba(0,0,0,.2);
-}
-.btn-primary:hover { filter: brightness(1.05); }
-.btn-primary:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-}
-
-/* (Opcional) un poco más de presencia en botones del header en mobile */
-@media (max-width: 640px) {
-  .app-header .btn-ghost { opacity: .95; }
-  .app-header .btn-ghost:hover { background: color-mix(in srgb, var(--bg) 85%, transparent); }
-}
