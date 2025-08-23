@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}Inmobiliaria{% endblock %}</title>
+  <title>{% block title %}Desarrollos LeoDS — Vos lo imaginás, nosotros lo publicamos{% endblock %}</title>
 
   <!-- Fuentes -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600&display=swap" rel="stylesheet">
@@ -35,7 +35,7 @@
     "@context":"https://schema.org",
     "@type":"WebSite",
     "url":"https://leods-blog.org/",
-    "name":"Inmobiliaria",
+    "name":"Desarrollos LeoDS",
     "potentialAction":{
       "@type":"SearchAction",
       "target":"https://leods-blog.org/buscar/?q={search_term_string}",
@@ -48,7 +48,7 @@
   {
     "@context":"https://schema.org",
     "@type":"Organization",
-    "name":"Inmobiliaria",
+    "name":"Desarrollos LeoDS",
     "url":"https://leods-blog.org/",
     "logo":"{% static 'img/logo.png' %}",
     "sameAs":[
@@ -69,34 +69,33 @@
   <!-- Estilos globales propios -->
   <link rel="stylesheet" href="{% static 'css/theme.css' %}">
 
-  <!-- SEO/OG mínimos -->
-  <meta name="description" content="Propiedades en venta y alquiler. Búsqueda rápida, filtros claros y mapa." />
-  <meta property="og:title" content="Inmobiliaria" />
-  <meta property="og:description" content="Encontrá tu próxima propiedad." />
+  <!-- SEO/OG -->
+  <meta name="description" content="Desarrollos LeoDS crea páginas web a medida para tu negocio: sitios rápidos, seguros y optimizados para Google. Pedí tu web hoy." />
+  <meta property="og:title" content="Desarrollos LeoDS — Vos lo imaginás, nosotros lo publicamos" />
+  <meta property="og:description" content="Páginas web a medida, SEO y performance. Ideal para emprendedores y pymes." />
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Desarrollos LeoDS" />
 
   <!-- Icono -->
   <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
 
+  <!-- Canonical -->
   <link rel="canonical" href="{{ request.build_absolute_uri }}">
-
 </head>
 <body class="min-h-full">
   <!-- Header -->
   <header class="app-header">
     <div class="mx-auto max-w-7xl px-3 py-4 flex items-center gap-4">
       <a href="{% url 'home' %}" class="flex items-center gap-3">
-        <img src="{% static 'img/logo.png' %}" alt="Inmobiliaria" class="h-10 w-auto">
-        <span class="font-display font-semibold text-2xl">Inmobiliaria</span>
+        <img src="{% static 'img/logo.png' %}" alt="Desarrollos LeoDS" class="h-10 w-auto">
+        <span class="font-display font-semibold text-2xl">Desarrollos LeoDS</span>
       </a>
 
       <nav class="ml-auto flex items-center gap-2">
         <a href="{% url 'propiedades_listado' %}" class="btn btn-ghost hidden sm:inline-flex">Todas las Propiedades</a>
         <a href="{% url 'nosotros' %}" class="btn btn-ghost hidden sm:inline-flex">Nosotros</a>
-
         <a href="{% url 'buscar_propiedades' %}" class="btn btn-ghost" aria-label="Buscar" title="Buscar">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
-               viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="11" cy="11" r="7"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -131,12 +130,13 @@
 
   <footer class="app-footer mx-auto max-w-7xl px-3 py-8 text-xs">
     <div class="flex items-center justify-between">
-      <p>© {% now "Y" %} Inmobiliaria</p>
+      <p>© {% now "Y" %} Desarrollos LeoDS</p>
       <a class="opacity-70 hover:opacity-100"
          href="{% url 'login' %}?next=/admin/propiedades/propiedad/add/">Administración</a>
     </div>
   </footer>
 
+  <!-- Dark mode -->
   <script>
     const key='prefers-dark';
     const setTheme = (d)=>document.documentElement.classList.toggle('dark', d);
@@ -147,6 +147,7 @@
     });
   </script>
 
+  <!-- Toggle menú móvil -->
   <script>
     const $btn = document.getElementById('mobileNavToggle');
     const $panel = document.getElementById('mobileNav');
