@@ -17,6 +17,8 @@
       display:['Poppins','Inter','ui-sans-serif']
     }}}}
   </script>
+
+  <!-- Preferencia de tema -->
   <script>
     (function () {
       try {
@@ -25,6 +27,43 @@
         }
       } catch (_) {}
     })();
+  </script>
+
+  <!-- SEO: JSON-LD global -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebSite",
+    "url":"https://leods-blog.org/",
+    "name":"Inmobiliaria",
+    "potentialAction":{
+      "@type":"SearchAction",
+      "target":"https://leods-blog.org/buscar/?q={search_term_string}",
+      "query-input":"required name=search_term_string"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"Inmobiliaria",
+    "url":"https://leods-blog.org/",
+    "logo":"{% static 'img/logo.png' %}",
+    "sameAs":[
+      "https://instagram.com/tuinmobiliaria",
+      "https://facebook.com/tuinmobiliaria",
+      "https://x.com/tuinmobiliaria"
+    ],
+    "contactPoint":[{
+      "@type":"ContactPoint",
+      "contactType":"customer service",
+      "email":"hola@tuinmobiliaria.com",
+      "telephone":"+541168044215",
+      "areaServed":"AR"
+    }]
+  }
   </script>
 
   <!-- Estilos globales propios -->
@@ -37,59 +76,46 @@
   <meta property="og:type" content="website" />
 
   <!-- Icono -->
-  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}" />
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
 </head>
 <body class="min-h-full">
   <!-- Header -->
   <header class="app-header">
     <div class="mx-auto max-w-7xl px-3 py-4 flex items-center gap-4">
-      <!-- Marca (logo + nombre) -->
       <a href="{% url 'home' %}" class="flex items-center gap-3">
-        <!-- Colocá tu logo en static/img/logo.svg -->
         <img src="{% static 'img/logo.png' %}" alt="Inmobiliaria" class="h-10 w-auto">
         <span class="font-display font-semibold text-2xl">Inmobiliaria</span>
       </a>
 
-      <!-- Navegación derecha -->
       <nav class="ml-auto flex items-center gap-2">
-        <a href="{% url 'propiedades_listado' %}" class="btn btn-ghost hidden sm:inline-flex">
-          Todas las Propiedades
-        </a>
+        <a href="{% url 'propiedades_listado' %}" class="btn btn-ghost hidden sm:inline-flex">Todas las Propiedades</a>
+        <a href="{% url 'nosotros' %}" class="btn btn-ghost hidden sm:inline-flex">Nosotros</a>
 
-
-        <a href="{% url 'nosotros' %}" class="btn btn-ghost hidden sm:inline-flex">
-          Nosotros
-        </a>
-
-
-        <!-- Buscar (lupa) — icono SVG en silueta, contrasta por currentColor -->
         <a href="{% url 'buscar_propiedades' %}" class="btn btn-ghost" aria-label="Buscar" title="Buscar">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+               viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="11" cy="11" r="7"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
         </a>
 
-        <!-- Tema -->
-        <button id="themeToggle" class="btn btn-ghost" title="Cambiar tema" aria-label="Cambiar tema">
-                  🌓
-                </button>
-                <button id="mobileNavToggle"
-                class="btn btn-ghost sm:hidden"
-                aria-controls="mobileNav"
-                aria-expanded="false"
-                aria-label="Abrir menú">
-          <!-- ícono “hamburguesa” -->
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M4 6h16M4 12h16M4 18h16"/>
+        <button id="themeToggle" class="btn btn-ghost" title="Cambiar tema" aria-label="Cambiar tema">🌓</button>
+
+        <button id="mobileNavToggle" class="btn btn-ghost sm:hidden"
+                aria-controls="mobileNav" aria-expanded="false" aria-label="Abrir menú">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="4" y1="6"  x2="20" y2="6"></line>
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="18" x2="20" y2="18"></line>
           </svg>
         </button>
-
       </nav>
     </div>
-    <!-- Panel móvil -->
+
     <div id="mobileNav" class="sm:hidden mobile-nav border-t" hidden>
       <nav class="px-3 py-3 flex flex-col gap-2">
         <a href="{% url 'propiedades_listado' %}" class="btn btn-ghost">Todas las Propiedades</a>
@@ -97,16 +123,12 @@
         <a href="{% url 'buscar_propiedades' %}" class="btn btn-ghost">Buscar</a>
       </nav>
     </div>
-
   </header>
 
-
-  <!-- Contenido -->
   <main class="mx-auto max-w-7xl px-3 py-4">
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Footer -->
   <footer class="app-footer mx-auto max-w-7xl px-3 py-8 text-xs">
     <div class="flex items-center justify-between">
       <p>© {% now "Y" %} Inmobiliaria</p>
@@ -115,7 +137,6 @@
     </div>
   </footer>
 
-  <!-- Dark mode simple -->
   <script>
     const key='prefers-dark';
     const setTheme = (d)=>document.documentElement.classList.toggle('dark', d);
@@ -125,6 +146,7 @@
       localStorage.setItem(key, next?'1':'0'); setTheme(next);
     });
   </script>
+
   <script>
     const $btn = document.getElementById('mobileNavToggle');
     const $panel = document.getElementById('mobileNav');
@@ -141,7 +163,6 @@
       });
     }
   </script>
-
 
   {% block extra_js %}{% endblock %}
 </body>

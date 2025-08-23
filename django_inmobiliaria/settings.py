@@ -29,6 +29,10 @@ INSTALLED_APPS = [
     'accounts',
     'propiedades',
     'django.contrib.humanize',
+
+    'django.contrib.sitemaps',
+
+
 ]
 
 
@@ -182,5 +186,34 @@ COMPANY_X         = "https://x.com/tuinmobiliaria"
 
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# settings.py (solo en prod)
-SECURE_SSL_REDIRECT = True
+
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in config('CSRF_TRUSTED_ORIGINS', default='', cast=str).split(',')
+    if o.strip()
+]
+
+
+FORCE_HTTPS = config('FORCE_HTTPS', cast=bool, default=False)  # False en local
+SECURE_SSL_REDIRECT = FORCE_HTTPS
+
+# --- Security headers (seguro en dev y prod) ---
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
+# Cookies (seguros y compatibles)
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_HTTPONLY = True  # explícito (default ya es True)
+
+
+if FORCE_HTTPS:
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+else:
+    SECURE_HSTS_SECONDS = 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False

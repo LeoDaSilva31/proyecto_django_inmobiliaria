@@ -265,3 +265,49 @@ img { max-width: 100%; height: auto; }
 /* Clamps por si no los tenías ya */
 .clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+
+/* ===== Correcciones de contraste e iconografía ===== */
+
+/* Color base para íconos (incluye hamburguesa y lupa) */
+:root { --icon: var(--txt); }
+html.dark { --icon: #F3F4F6; }
+
+/* Botón del menú móvil con trazo nítido y borde suave */
+#mobileNavToggle { border: 1px solid var(--line); border-radius: .7rem; }
+#mobileNavToggle:hover { background: color-mix(in srgb, var(--bg) 85%, transparent); }
+#mobileNavToggle svg { width: 1.5rem; height: 1.5rem; }
+#mobileNavToggle svg line,
+#mobileNavToggle svg path {
+  stroke: var(--icon);
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  fill: none;
+}
+
+/* Botón primario consistente en claro/oscuro (arregla "Aplicar" en filtros) */
+:root {
+  --btn-primary-bg: #111827; /* gray-900 */
+  --btn-primary-fg: #ffffff;
+}
+html.dark {
+  --btn-primary-bg: #111827; /* mantenemos oscuro para contrastar en fondos oscuros */
+  --btn-primary-fg: #ffffff;
+}
+.btn-primary {
+  background: var(--btn-primary-bg) !important;
+  color: var(--btn-primary-fg) !important;
+  border-color: transparent !important;
+  box-shadow: 0 1px 0 rgba(0,0,0,.2);
+}
+.btn-primary:hover { filter: brightness(1.05); }
+.btn-primary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* (Opcional) un poco más de presencia en botones del header en mobile */
+@media (max-width: 640px) {
+  .app-header .btn-ghost { opacity: .95; }
+  .app-header .btn-ghost:hover { background: color-mix(in srgb, var(--bg) 85%, transparent); }
+}
