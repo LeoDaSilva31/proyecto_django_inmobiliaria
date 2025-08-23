@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}Desarrollos LeoDS — Vos lo imaginás, nosotros lo publicamos{% endblock %}</title>
+  <title>{% block title %}Desarrollos LeoDS — Vos lo imaginás, nosotros te lo publicamos{% endblock %}</title>
 
   <!-- Fuentes -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600&display=swap" rel="stylesheet">
@@ -36,6 +36,7 @@
     "@type":"WebSite",
     "url":"https://leods-blog.org/",
     "name":"Desarrollos LeoDS",
+    "alternateName": ["leods blog","leodsblog","leoblog","leods","páginas web a medida","desarrollo de páginas web"],
     "potentialAction":{
       "@type":"SearchAction",
       "target":"https://leods-blog.org/buscar/?q={search_term_string}",
@@ -66,31 +67,37 @@
   }
   </script>
 
-
   <!-- Estilos globales propios -->
   <link rel="stylesheet" href="{% static 'css/theme.css' %}">
 
-  <!-- SEO/OG mínimos -->
+  <!-- SEO/OG -->
   <meta name="description" content="Desarrollos LeoDS crea páginas web a medida para tu negocio: sitios rápidos, seguros y optimizados para Google. Pedí tu web hoy." />
 
-  <meta property="og:title" content="Desarrollos LeoDS — Vos lo imaginás, nosotros lo publicamos" />
+  <meta property="og:title" content="Desarrollos LeoDS — Vos lo imaginás, nosotros te lo publicamos" />
   <meta property="og:description" content="Páginas web a medida, SEO y performance. Ideal para emprendedores y pymes." />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Desarrollos LeoDS" />
+  <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+  <meta property="og:image" content="{% static 'img/logo.png' %}" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Desarrollos LeoDS — Vos lo imaginás, nosotros te lo publicamos" />
+  <meta name="twitter:description" content="Páginas web a medida, SEO y performance. Ideal para emprendedores y pymes." />
+  <meta name="twitter:image" content="{% static 'img/logo.png' %}" />
 
   <!-- Icono -->
   <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
 
   <link rel="canonical" href="{{ request.build_absolute_uri }}">
-
 </head>
 <body class="min-h-full">
   <!-- Header -->
   <header class="app-header">
     <div class="mx-auto max-w-7xl px-3 py-4 flex items-center gap-4">
       <a href="{% url 'home' %}" class="flex items-center gap-3">
-        <img src="{% static 'img/logo.png' %}" alt="Inmobiliaria" class="h-10 w-auto">
-        <span class="font-display font-semibold text-2xl">Inmobiliaria</span>
+        <img src="{% static 'img/logo.png' %}" alt="Desarrollos LeoDS" class="h-10 w-auto">
+        <span class="font-display font-semibold text-2xl">Desarrollos LeoDS</span>
       </a>
 
       <nav class="ml-auto flex items-center gap-2">
@@ -134,7 +141,7 @@
 
   <footer class="app-footer mx-auto max-w-7xl px-3 py-8 text-xs">
     <div class="flex items-center justify-between">
-      <p>© {% now "Y" %} Inmobiliaria</p>
+      <p>© {% now "Y" %} Desarrollos LeoDS</p>
       <a class="opacity-70 hover:opacity-100"
          href="{% url 'login' %}?next=/admin/propiedades/propiedad/add/">Administración</a>
     </div>

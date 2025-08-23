@@ -1,42 +1,90 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Desarrollos LeoDS — Páginas web a medida para tu negocio{% endblock %}
 
+{% block title %}Desarrollos LeoDS — Páginas web a medida para tu negocio{% endblock %}
 
 {% block content %}
 
-<h1 class="text-lg font-semibold mb-3">Propiedades destacadas</h1>
+<!-- Hero comercial -->
+<section class="rounded-xl p-6 sm:p-10 mb-8 bg-gradient-to-b from-sky-50/60 to-transparent dark:from-slate-800/40 border border-[var(--line)]">
+  <h1 class="font-display text-3xl sm:text-4xl font-semibold leading-tight">
+    Desarrollos LeoDS
+    <span class="block text-base sm:text-lg font-normal mt-2">
+      Vos lo imaginás, nosotros lo publicamos.
+    </span>
+  </h1>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-  {% for p in destacadas %}
-    <a href="{% url 'propiedad_detalle' p.codigo %}" class="card group transition">
-      <div class="relative">
-        <img
-          src="{% if p.imagen_principal %}{{ p.imagen_principal.url }}{% else %}{% static 'img/placeholder.webp' %}{% endif %}"
-          alt="{{ p.titulo }}"
-          class="w-full object-cover group-hover:opacity-95 aspect-16-9">
-        {% if p.destacada %}
-          <span class="chip absolute top-2 left-2">Destacada</span>
-        {% endif %}
-      </div>
-      <div class="p-3">
-        <h3 class="font-semibold clamp-1">{{ p.titulo }}</h3>
-        <p class="text-sm muted">{{ p.precio_display }}</p>
-        <div class="mt-1 flex items-center gap-2 text-xs muted">
-          <span>🛏️ {{ p.habitaciones }}</span>
-          <span>🛁 {{ p.banos }}</span>
-          {% if p.cochera %}<span>🚗 Cochera</span>{% else %}<span class="opacity-70">🚗 No posee</span>{% endif %}
-          {% if p.acepta_mascotas %}<span>🐶 Acepta</span>{% else %}<span class="opacity-70">🐶 No</span>{% endif %}
-        </div>
-        <p class="text-[11px] muted mt-1 clamp-1">📍 {{ p.localidad }}, {{ p.provincia }}</p>
-      </div>
+  <p class="mt-4 text-base sm:text-lg muted max-w-3xl">
+    Páginas web a medida, rápidas, seguras y optimizadas para Google.
+    Ideales para emprendedores y pymes que quieren convertir visitas en clientes.
+  </p>
+
+  <div class="mt-6 flex flex-wrap gap-3">
+    {% with msg="Hola, quiero una web a medida para mi negocio. ¿Podemos charlar?" %}
+    <a
+      href="https://api.whatsapp.com/send?phone=541168044215&text={{ msg|urlencode }}"
+      target="_blank" rel="noopener"
+      class="btn"
+      style="background:var(--accent); color:var(--card);"
+    >
+      💬 Cotizar mi web
     </a>
-  {% empty %}
-    <p class="muted">No hay destacadas por ahora.</p>
-  {% endfor %}
-</div>
+    {% endwith %}
 
-<div class="mt-6">
-  <a class="btn" href="{% url 'propiedades_listado' %}">Ver todas</a>
-</div>
+    <a href="{% url 'nosotros' %}" class="btn btn-ghost">
+      Conocer más
+    </a>
+    <a href="{% url 'propiedades_listado' %}" class="btn btn-ghost">
+      Ver catálogo demo
+    </a>
+  </div>
+
+  <!-- Beneficios -->
+  <ul class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+    <li class="chip">⚡ Carga rápida</li>
+    <li class="chip">🔎 SEO on-page</li>
+    <li class="chip">🔒 HTTPS + buenas prácticas</li>
+    <li class="chip">🧰 Soporte y mejora continua</li>
+  </ul>
+</section>
+
+<!-- Catálogo demo (propiedades) -->
+<section>
+  <h2 class="text-lg font-semibold mb-1">Catálogo demo inmobiliario</h2>
+  <p class="muted text-sm mb-4">Ejemplo de vertical con listado, filtros y fichas de detalle.</p>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for p in destacadas %}
+      <a href="{% url 'propiedad_detalle' p.codigo %}" class="card group transition">
+        <div class="relative">
+          <img
+            src="{% if p.imagen_principal %}{{ p.imagen_principal.url }}{% else %}{% static 'img/placeholder.webp' %}{% endif %}"
+            alt="{{ p.titulo }}"
+            class="w-full object-cover group-hover:opacity-95 aspect-16-9">
+          {% if p.destacada %}
+            <span class="chip absolute top-2 left-2">Destacada</span>
+          {% endif %}
+        </div>
+        <div class="p-3">
+          <h3 class="font-semibold clamp-1">{{ p.titulo }}</h3>
+          <p class="text-sm muted">{{ p.precio_display }}</p>
+          <div class="mt-1 flex items-center gap-2 text-xs muted">
+            <span>🛏️ {{ p.habitaciones }}</span>
+            <span>🛁 {{ p.banos }}</span>
+            {% if p.cochera %}<span>🚗 Cochera</span>{% else %}<span class="opacity-70">🚗 No posee</span>{% endif %}
+            {% if p.acepta_mascotas %}<span>🐶 Acepta</span>{% else %}<span class="opacity-70">🐶 No</span>{% endif %}
+          </div>
+          <p class="text-[11px] muted mt-1 clamp-1">📍 {{ p.localidad }}, {{ p.provincia }}</p>
+        </div>
+      </a>
+    {% empty %}
+      <p class="muted">No hay destacadas por ahora.</p>
+    {% endfor %}
+  </div>
+
+  <div class="mt-6">
+    <a class="btn" href="{% url 'propiedades_listado' %}">Ver todas</a>
+  </div>
+</section>
+
 {% endblock %}
