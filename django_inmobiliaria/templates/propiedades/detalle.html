@@ -144,4 +144,57 @@
 
 {% block extra_js %}
   <script defer src="{% static 'js/detalle.js' %}"></script>
+  {{ block.super }}
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"BreadcrumbList",
+    "itemListElement":[
+      {"@type":"ListItem","position":1,"name":"Inicio","item":"https://leods-blog.org/"},
+      {"@type":"ListItem","position":2,"name":"Propiedades","item":"https://leods-blog.org/propiedades/"},
+      {"@type":"ListItem","position":3,
+       "name":"{{ p.titulo|default:p.codigo|default:'Propiedad'|escapejs }}",
+       "item":"{{ request.build_absolute_uri|escapejs }}"}
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"RealEstateListing",
+    "name": "{{ p.titulo|default:p.codigo|escapejs }}",
+    "url": "{{ request.build_absolute_uri|escapejs }}",
+    {% if p.descripcion %}"description": "{{ p.descripcion|striptags|truncatechars:300|escapejs }}",{% endif %}
+    "image": [
+      {% if p.imagen_principal %}"{{ p.imagen_principal.url|escapejs }}"{% if p.imagenes.all %},{% endif %}{% endif %}
+      {% for img in p.imagenes.all|slice:":6" %}"{{ img.imagen.url|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}
+    ],
+    "address": {
+      "@type":"PostalAddress",
+      {% if p.direccion %}"streetAddress":"{{ p.direccion|escapejs }}",{% endif %}
+      {% if p.localidad %}"addressLocality":"{{ p.localidad|escapejs }}",{% endif %}
+      {% if p.provincia %}"addressRegion":"{{ p.provincia|escapejs }}",{% endif %}
+      {% if p.pais %}"addressCountry":"{{ p.pais|escapejs }}"{% endif %}
+    },
+    {% if p.habitaciones %}"numberOfRooms": {{ p.habitaciones }},{% endif %}
+    {% if p.banos %}"numberOfBathroomsTotal": {{ p.banos }},{% endif %}
+    {% if p.superficie_total %}"floorSize": {"@type":"QuantitativeValue","value": {{ p.superficie_total }},"unitCode":"MTK"}, {% endif %}
+    {% if p.precio %}"offers": {
+      "@type":"Offer",
+      "price": "{{ p.precio }}",
+      "priceCurrency": "ARS",
+      "availability": "https://schema.org/InStock"
+    },{% endif %}
+    "seller": {
+      "@type":"RealEstateAgent",
+      "name":"Inmobiliaria",
+      "url":"https://leods-blog.org/"
+    }
+  }
+  </script>
+
 {% endblock %}
+
+
