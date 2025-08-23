@@ -1,10 +1,35 @@
 {% extends "base.html" %}
-{% block title %}Buscar{% endblock %}
+{% load static %}
+
+{% block title %}Buscar — Resultados{% endblock %}
 
 {% block content %}
+  <h1 class="text-2xl font-semibold mb-4">Resultados de búsqueda</h1>
 
-<p class="text-sm muted mb-3">Buscaste: <strong>{{ q|default:"(sin término)" }}</strong></p>
+  <form method="get" action="{% url 'buscar_propiedades' %}" class="mb-6 flex flex-wrap gap-2">
+    <input class="input" type="text" name="q" value="{{ request.GET.q }}" placeholder="Buscar por título, código, zona…">
+    <button class="btn" type="submit">Buscar</button>
+  </form>
 
-{% include "propiedades/_filters.html" %}
-{% include "propiedades/_grid_list.html" %}
+  {% if resultados %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {% for p in resultados %}
+        <a href="{% url 'propiedad_detalle' p.codigo %}" class="card group transition">
+          <div class="relative">
+            <img
+              src="{% if p.imagen_principal %}{{ p.imagen_principal.url }}{% else %}{% static 'img/placeholder.webp' %}{% endif %}"
+              alt="{{ p.titulo }}"
+              class="w-full object-cover group-hover:opacity-95 aspect-16-9">
+          </div>
+          <div class="p-3">
+            <h3 class="font-semibold clamp-1">{{ p.titulo }}</h3>
+            <p class="text-sm muted">{{ p.precio_display }}</p>
+            <p class="text-[11px] muted mt-1 clamp-1">📍 {{ p.localidad }}, {{ p.provincia }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">No se encontraron resultados para “{{ request.GET.q }}”.</p>
+  {% endif %}
 {% endblock %}

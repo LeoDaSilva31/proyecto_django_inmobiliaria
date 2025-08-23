@@ -1,22 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
 
-
-=======
-
 {% block title %}Desarrollos LeoDS — Páginas web a medida para tu negocio{% endblock %}
 
 {% block content %}
-
-
-<!-- Hero comercial -->
-<section class="rounded-xl p-6 sm:p-10 mb-8 bg-gradient-to-b from-sky-50/60 to-transparent dark:from-slate-800/40 border border-[var(--line)]">
-  <h1 class="font-display text-3xl sm:text-4xl font-semibold leading-tight">
-    Desarrollos LeoDS
-    <span class="block text-base sm:text-lg font-normal mt-2">
-      Vos lo imaginás, nosotros lo publicamos.
-    </span>
-  </h1>
 
 <!-- Hero / Branding -->
 <section class="rounded-xl p-6 mb-8 shadow-md"
@@ -37,42 +24,6 @@
       Ver ejemplos del sitio
     </a>
   </div>
-</section>
-
-<h2 class="text-lg font-semibold mb-3">Propiedades destacadas</h2>
-
-  <p class="mt-4 text-base sm:text-lg muted max-w-3xl">
-    Páginas web a medida, rápidas, seguras y optimizadas para Google.
-    Ideales para emprendedores y pymes que quieren convertir visitas en clientes.
-  </p>
-
-  <div class="mt-6 flex flex-wrap gap-3">
-    {% with msg="Hola, quiero una web a medida para mi negocio. ¿Podemos charlar?" %}
-    <a
-      href="https://api.whatsapp.com/send?phone=541168044215&text={{ msg|urlencode }}"
-      target="_blank" rel="noopener"
-      class="btn"
-      style="background:var(--accent); color:var(--card);"
-    >
-      💬 Cotizar mi web
-    </a>
-    {% endwith %}
-
-    <a href="{% url 'nosotros' %}" class="btn btn-ghost">
-      Conocer más
-    </a>
-    <a href="{% url 'propiedades_listado' %}" class="btn btn-ghost">
-      Ver catálogo demo
-    </a>
-  </div>
-
-  <!-- Beneficios -->
-  <ul class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
-    <li class="chip">⚡ Carga rápida</li>
-    <li class="chip">🔎 SEO on-page</li>
-    <li class="chip">🔒 HTTPS + buenas prácticas</li>
-    <li class="chip">🧰 Soporte y mejora continua</li>
-  </ul>
 </section>
 
 <!-- Catálogo demo (propiedades) -->

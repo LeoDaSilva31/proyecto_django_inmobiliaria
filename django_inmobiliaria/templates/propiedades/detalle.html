@@ -56,7 +56,6 @@
       {% endif %}
 
       <div class="flex flex-wrap gap-2 mb-6">
-        {# Mostrar el tipo sólo si NO es "otro" #}
         {% if p.tipo and p.tipo != 'otro' %}
           <span class="chip">{{ p.get_tipo_display }}</span>
         {% endif %}
@@ -75,7 +74,6 @@
 
       {% if p.descripcion %}
         <h3 class="text-2xl font-bold mb-3">Descripción</h3>
-        <!-- .prose asegura que siga tokens en claro/oscuro -->
         <div class="prose max-w-none mt-2">
           {{ p.descripcion|linebreaksbr }}
         </div>
@@ -91,18 +89,14 @@
         Consultar por WhatsApp
       </a>
       {% endwith %}
-
-
-
     </div>
   </div>
 
   <hr class="my-8" style="border-color:var(--line);" />
 
-  <!-- Sección: solo columnas Dirección + Mapa (sin título general) -->
+  <!-- Dirección + Mapa -->
   <div class="rounded-lg p-6 ubox" style="background:color-mix(in srgb, var(--card) 96%, transparent);">
     <div class="ubox-grid">
-      <!-- Columna: Dirección -->
       <section class="ubox-col">
         <h3 class="ubox-h3">Dirección</h3>
         <div class="ubox-body">
@@ -115,8 +109,6 @@
         </div>
       </section>
 
-      <!-- Columna: Mapa (preferir lat/lng; fallback dirección) -->
-<!-- Columna: Mapa (por dirección únicamente) -->
       <section class="ubox-col">
         <h3 class="ubox-h3">Mapa</h3>
         <div class="ubox-body">
@@ -127,12 +119,11 @@
           </div>
         </div>
       </section>
-
     </div>
   </div>
 </div>
 
-<!-- Lightbox (encima de todo) -->
+<!-- Lightbox -->
 <div id="imageLightbox" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4" style="z-index:99999;">
   <div id="imageLightboxBackdrop" class="absolute inset-0"></div>
   <button id="lb-close" class="absolute top-4 right-4 text-white text-4xl leading-none font-bold z-50 p-2">×</button>
@@ -146,6 +137,7 @@
   <script defer src="{% static 'js/detalle.js' %}"></script>
   {{ block.super }}
 
+  <!-- Breadcrumbs -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -160,13 +152,14 @@
   }
   </script>
 
+  <!-- JSON-LD de la ficha -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
     "@type":"RealEstateListing",
     "name": "{{ p.titulo|default:p.codigo|escapejs }}",
     "url": "{{ request.build_absolute_uri|escapejs }}",
-    {% if p.descripcion %}"description": "{{ p.descripcion|striptags|truncatechars:300|escapejs }}",{% endif %}
+    {% if p.descripcion %}"description": "{{ p.descripcion|striptags|truncatechars:300|escapejs }}", {% endif %}
     "image": [
       {% if p.imagen_principal %}"{{ p.imagen_principal.url|escapejs }}"{% if p.imagenes.all %},{% endif %}{% endif %}
       {% for img in p.imagenes.all|slice:":6" %}"{{ img.imagen.url|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}
@@ -194,7 +187,4 @@
     }
   }
   </script>
-
 {% endblock %}
-
-
