@@ -92,10 +92,10 @@
     </div>
 
     <div class="md:col-span-2 flex items-center gap-3">
-      <button class="btn btn-primary" type="submit">Aplicar</button>
+      <button type="button" class="btn btn-light" type="submit">Aplicar</button>
 
       {# Limpiar rápido (conserva q) #}
-      <button class="btn" type="submit" name="__clear" value="1"
+      <button type="button" class="btn btn-light" type="submit" name="__clear" value="1"
               onclick="
                 const form=this.form;
                 const keepQ=form.querySelector('input[name=q]')?.value||'';
