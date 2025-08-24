@@ -35,7 +35,7 @@
 
     <div class="md:col-span-2">
       <label class="block text-sm muted mb-1">Buscar</label>
-      <input class="input" type="text" name="q" placeholder="Ej.: local, depto 3 amb, garage"
+      <input class="input" type="text" name="q" placeholder="Ingrese su busqueda"
              value="{{ q|default:'' }}">
     </div>
 
@@ -61,7 +61,7 @@
 
     {# NUEVO: Localidad (opciones dinámicas) #}
     <div>
-      <label class="block text-sm muted mb-1">Localidad</label>
+      <label class="block text-sm muted mb-1">Localidades disponibles</label>
       <select class="select" name="localidad">
         <option value="">Todas</option>
         {% for loc in localidades %}

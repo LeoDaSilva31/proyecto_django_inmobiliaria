@@ -12,46 +12,51 @@
     Páginas web a medida para tu negocio
   </h1>
   <p class="text-base sm:text-lg muted max-w-2xl">
-    Sitios rápidos, seguros y listos para aparecer en Google. Desarrollo, SEO técnico y performance.
+    Sitios rápidos, seguros y listos para aparecer en Google.
   </p>
 
   <div class="flex flex-wrap items-center gap-3 mt-4">
-    <a class="btn" href="https://api.whatsapp.com/send?phone=541168044215&text={{ 'Hola LeoDS, quiero una web a medida para mi negocio.'|urlencode }}"
+    <a class="btn btn-ghost" href="https://api.whatsapp.com/send?phone=541168044215&text={{ 'Hola LeoDS, quiero una web a medida para mi negocio.'|urlencode }}"
        target="_blank" rel="noopener">
       Pedir presupuesto por WhatsApp
-    </a>
-    <a class="btn btn-ghost" href="{% url 'propiedades_listado' %}">
-      Ver ejemplos del sitio
     </a>
   </div>
 </section>
 
 <!-- Catálogo demo (propiedades) -->
 <section>
-  <h2 class="text-lg font-semibold mb-1">Catálogo demo inmobiliario</h2>
-  <p class="muted text-sm mb-4">Ejemplo de vertical con listado, filtros y fichas de detalle.</p>
+  <h2 class="text-lg font-semibold mb-1">Catálogo de Propiedades Destacadas</h2>
+  <p>
+    Las propiedades que se muestran en este sitio son meras ilustraciones, a modo de ejemplo.
+  </p>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     {% for p in destacadas %}
-      <a href="{% url 'propiedad_detalle' p.codigo %}" class="card group transition">
-        <div class="relative">
+      <a href="{% url 'propiedad_detalle' p.codigo %}" class="card group transition property-card h-full">
+        <!-- Miniatura con relación de aspecto fija -->
+        <div class="thumb relative">
           <img
             src="{% if p.imagen_principal %}{{ p.imagen_principal.url }}{% else %}{% static 'img/placeholder.webp' %}{% endif %}"
             alt="{{ p.titulo }}"
-            class="w-full object-cover group-hover:opacity-95 aspect-16-9">
+            loading="lazy"
+          />
           {% if p.destacada %}
             <span class="chip absolute top-2 left-2">Destacada</span>
           {% endif %}
         </div>
-        <div class="p-3">
+
+        <!-- Contenido -->
+        <div class="content">
           <h3 class="font-semibold clamp-1">{{ p.titulo }}</h3>
           <p class="text-sm muted">{{ p.precio_display }}</p>
+
           <div class="mt-1 flex items-center gap-2 text-xs muted">
             <span>🛏️ {{ p.habitaciones }}</span>
             <span>🛁 {{ p.banos }}</span>
             {% if p.cochera %}<span>🚗 Cochera</span>{% else %}<span class="opacity-70">🚗 No posee</span>{% endif %}
             {% if p.acepta_mascotas %}<span>🐶 Acepta</span>{% else %}<span class="opacity-70">🐶 No</span>{% endif %}
           </div>
+
           <p class="text-[11px] muted mt-1 clamp-1">📍 {{ p.localidad }}, {{ p.provincia }}</p>
         </div>
       </a>
