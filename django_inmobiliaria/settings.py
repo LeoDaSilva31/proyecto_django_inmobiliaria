@@ -1,10 +1,11 @@
+# django_inmobiliaria/settings.py
 from pathlib import Path
 from decouple import config
 import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# === Toggles de entorno
+
 USE_PROD = config('USE_PROD', cast=bool, default=False)
 USE_S3   = config('USE_S3',   cast=bool, default=False)
 
@@ -18,27 +19,33 @@ USE_I18N = True
 USE_TZ = True
 
 INSTALLED_APPS = [
-    'whitenoise.runserver_nostatic',   
+    'whitenoise.runserver_nostatic',
+  
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',      
-    'storages',                       
-    'accounts',
-    'propiedades',
-    'django.contrib.humanize',
+    'django.contrib.staticfiles',
 
+  
+    'storages',
+    'django.contrib.humanize',
     'django.contrib.sitemaps',
 
-
+ 
+    'accounts',
+    'propiedades',
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+
+   
+    'django_inmobiliaria.middleware.IPAllowlistMiddleware',
+
+  
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -50,12 +57,11 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'django_inmobiliaria.urls'
 WSGI_APPLICATION = 'django_inmobiliaria.wsgi.application'
 
-# === Templates (creamos luego; por ahora placeholders en views)
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
     'DIRS': [
-        BASE_DIR / 'templates',                           # si algún día usás esta ruta
-        BASE_DIR / 'django_inmobiliaria' / 'templates',   # ← tu carpeta actual
+        BASE_DIR / 'templates',
+        BASE_DIR / 'django_inmobiliaria' / 'templates',
     ],
     'APP_DIRS': True,
     'OPTIONS': {
@@ -69,7 +75,6 @@ TEMPLATES = [{
 }]
 
 
-# === BD: SQLite en dev | Postgres en prod
 if USE_PROD:
     DATABASES = {
         'default': {
@@ -79,9 +84,7 @@ if USE_PROD:
             'PASSWORD': config('DB_PASSWORD'),
             'HOST':     config('DB_HOST'),
             'PORT':     config('DB_PORT', default='5432'),
-            'OPTIONS': {
-                'sslmode': 'require',
-            },
+            'OPTIONS': {'sslmode': 'require'},
             'CONN_MAX_AGE': 60,
         }
     }
@@ -93,47 +96,36 @@ else:
         }
     }
 
-# === Archivos estáticos y media
 STATIC_URL  = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
 STATICFILES_DIRS = [BASE_DIR / "static"]
-
 
 MEDIA_URL   = '/media/'
 MEDIA_ROOT  = BASE_DIR / 'media'
 
-# STORAGES por entorno
+
 if USE_PROD and USE_S3:
+    AWS_DEFAULT_ACL = None
+    AWS_S3_BUCKET_OBJECT_OWNERSHIP = "BucketOwnerEnforced"
+    AWS_QUERYSTRING_AUTH = False
 
-    AWS_DEFAULT_ACL = None                     
-    AWS_S3_BUCKET_OBJECT_OWNERSHIP = "BucketOwnerEnforced"  
-    AWS_QUERYSTRING_AUTH = False               
-
-
-    # === S3 Configuración
     AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
     AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME')
-    
-    # Asignar los nombres de los buckets
+
     AWS_STATIC_BUCKET_NAME = config('AWS_STATIC_BUCKET_NAME')
-    AWS_MEDIA_BUCKET_NAME = config('AWS_MEDIA_BUCKET_NAME')
+    AWS_MEDIA_BUCKET_NAME  = config('AWS_MEDIA_BUCKET_NAME')
 
-    # Dominios
     AWS_STATIC_CUSTOM_DOMAIN = config('AWS_STATIC_CUSTOM_DOMAIN', default=None)
-    AWS_MEDIA_CUSTOM_DOMAIN = config('AWS_MEDIA_CUSTOM_DOMAIN', default=None)
+    AWS_MEDIA_CUSTOM_DOMAIN  = config('AWS_MEDIA_CUSTOM_DOMAIN', default=None)
 
-    
     from .storages_s3 import MediaRootS3Boto3Storage, StaticRootS3Boto3Storage
 
-    # Configuración de los "storages"
     STORAGES = {
         "default": {"BACKEND": "django_inmobiliaria.storages_s3.MediaRootS3Boto3Storage"},
         "staticfiles": {"BACKEND": "django_inmobiliaria.storages_s3.StaticRootS3Boto3Storage"},
     }
 
-    # === URLS de los archivos
     if AWS_STATIC_CUSTOM_DOMAIN:
         STATIC_URL = f"https://{AWS_STATIC_CUSTOM_DOMAIN}/static/"
     else:
@@ -143,22 +135,22 @@ if USE_PROD and USE_S3:
         MEDIA_URL = f"https://{AWS_MEDIA_CUSTOM_DOMAIN}/media/"
     else:
         MEDIA_URL = f"https://{AWS_MEDIA_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/media/"
-
 else:
     STORAGES = {
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
         "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
-    
     }
-# === Auth: usuario custom (DNI)
-AUTH_USER_MODEL = "accounts.User"
-LOGIN_URL = "login"
 
-# === Sesión: autologout 10 min (sliding)
+
+AUTH_USER_MODEL = "accounts.User"
+LOGIN_URL = "login"          # quitamos two_factor
+LOGIN_REDIRECT_URL = "home"
+
+
 SESSION_COOKIE_AGE = 600
 SESSION_SAVE_EVERY_REQUEST = True
 
-# === Cache (simple; luego Redis si querés)
+
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
@@ -169,10 +161,38 @@ CACHES = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Seguridad recomendada en prod (HTTPS)
+
 SECURE_BROWSER_XSS_FILTER = True
 SESSION_COOKIE_SECURE = USE_PROD
 CSRF_COOKIE_SECURE = USE_PROD
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_HTTPONLY = True
+
+FORCE_HTTPS = config('FORCE_HTTPS', cast=bool, default=False)
+SECURE_SSL_REDIRECT = FORCE_HTTPS
+
+if FORCE_HTTPS:
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+else:
+    SECURE_HSTS_SECONDS = 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
+
+# Proxy/Cloudflare
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in config('CSRF_TRUSTED_ORIGINS', default='', cast=str).split(',')
+    if o.strip()
+]
 
 
 COMPANY_NAME = "Inmobiliaria Pérez"
@@ -185,35 +205,6 @@ COMPANY_FACEBOOK  = "https://facebook.com/tuinmobiliaria"
 COMPANY_X         = "https://x.com/tuinmobiliaria"
 
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-CSRF_TRUSTED_ORIGINS = [
-    o.strip() for o in config('CSRF_TRUSTED_ORIGINS', default='', cast=str).split(',')
-    if o.strip()
-]
-
-
-FORCE_HTTPS = config('FORCE_HTTPS', cast=bool, default=False)  # False en local
-SECURE_SSL_REDIRECT = FORCE_HTTPS
-
-# --- Security headers (seguro en dev y prod) ---
-SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = "DENY"
-SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
-
-# Cookies (seguros y compatibles)
-SESSION_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_HTTPONLY = True  # explícito (default ya es True)
-
-
-if FORCE_HTTPS:
-    SECURE_SSL_REDIRECT = True
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-
-else:
-    SECURE_HSTS_SECONDS = 0
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
-    SECURE_HSTS_PRELOAD = False
+IP_ALLOWLIST_ENABLED = os.getenv("IP_ALLOWLIST_ENABLED", "0") == "1"
+IP_ALLOWLIST_SCOPE   = os.getenv("IP_ALLOWLIST_SCOPE", "admin") 
+ALLOWED_IPS          = os.getenv("ALLOWED_IPS", "")             

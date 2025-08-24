@@ -1,8 +1,10 @@
+# django_inmobiliaria/urls.py
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.http import HttpResponse
+import os
 
 from propiedades.views import (
     home, listado_propiedades, detalle_propiedad, buscar_propiedades, nosotros
@@ -24,18 +26,25 @@ def robots_txt(_request):
     )
     return HttpResponse(content, content_type="text/plain")
 
-urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("cuentas/", include("accounts.urls")),
 
+ADMIN_URL = os.environ.get("DJANGO_ADMIN_URL", "constructordemisitio/")
+
+urlpatterns = [
+  
     path("", home, name="home"),
     path("propiedades/", listado_propiedades, name="propiedades_listado"),
     path("propiedades/<str:codigo>/", detalle_propiedad, name="propiedad_detalle"),
     path("buscar/", buscar_propiedades, name="buscar_propiedades"),
     path("nosotros/", nosotros, name="nosotros"),
 
+    path("cuentas/", include("accounts.urls")),
+
+  
     path("robots.txt", robots_txt, name="robots_txt"),
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
+
+   
+    path(ADMIN_URL, admin.site.urls),
 ]
 
 if settings.DEBUG:
