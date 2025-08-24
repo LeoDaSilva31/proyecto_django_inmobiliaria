@@ -1,29 +1,78 @@
-{# propiedes/_grid_list.html #}
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
-  {% for p in page_obj.object_list %}
-    {% include "propiedades/_card.html" with p=p %}
-  {% empty %}
-    <p class="muted">No hay resultados.</p>
-  {% endfor %}
-</div>
+{% load static %}
 
-<!-- Paginación (preserva filtros y búsqueda) -->
-<nav class="mt-6 flex items-center justify-center gap-2" aria-label="Paginación">
-  {% if page_obj.has_previous %}
-    <a class="btn"
-       href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q|urlencode }}{% endif %}{% if request.GET.operacion %}&operacion={{ request.GET.operacion }}{% endif %}{% if request.GET.tipo %}&tipo={{ request.GET.tipo }}{% endif %}{% if request.GET.min %}&min={{ request.GET.min }}{% endif %}{% if request.GET.max %}&max={{ request.GET.max }}{% endif %}{% if request.GET.habitaciones %}&habitaciones={{ request.GET.habitaciones }}{% endif %}{% if request.GET.mascotas %}&mascotas=1{% endif %}">
-      Anterior
-    </a>
-  {% endif %}
+{# Toma los ítems desde page_obj.object_list (paginado) o desde 'propiedades' #}
+{% if page_obj %}
+  {% with qs=page_obj.object_list %}
+    {% if qs and qs|length %}
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+        {% for p in qs %}
+          <a href="{% url 'propiedad_detalle' p.codigo %}" class="card property-card group transition no-gray">
+            <div class="thumb">
+              <img
+                src="{% if p.imagen_principal %}{{ p.imagen_principal.url }}{% else %}{% static 'img/placeholder.webp' %}{% endif %}"
+                alt="{{ p.titulo|default:p.codigo }}">
+            </div>
 
-  <span class="text-sm muted">
-    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-  </span>
+            <div class="content">
+              <h3 class="font-semibold clamp-2">{{ p.titulo|default:p.codigo }}</h3>
 
-  {% if page_obj.has_next %}
-    <a class="btn"
-       href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q|urlencode }}{% endif %}{% if request.GET.operacion %}&operacion={{ request.GET.operacion }}{% endif %}{% if request.GET.tipo %}&tipo={{ request.GET.tipo }}{% endif %}{% if request.GET.min %}&min={{ request.GET.min }}{% endif %}{% if request.GET.max %}&max={{ request.GET.max }}{% endif %}{% if request.GET.habitaciones %}&habitaciones={{ request.GET.habitaciones }}{% endif %}{% if request.GET.mascotas %}&mascotas=1{% endif %}">
-      Siguiente
-    </a>
-  {% endif %}
-</nav>
+              {% if p.precio_display %}
+                <p class="text-sm muted">{{ p.precio_display }}</p>
+              {% endif %}
+
+              <div class="mt-1 flex items-center gap-2 text-xs muted">
+                {% if p.habitaciones %}<span>🛏️ {{ p.habitaciones }}</span>{% endif %}
+                {% if p.banos %}<span>🛁 {{ p.banos }}</span>{% endif %}
+                <span>{% if p.cochera %}🚗 Cochera{% else %}<span class="opacity-70">🚗 No{% endif %}</span>
+              </div>
+
+              <p class="text-[11px] muted mt-1 clamp-1">
+                {% if p.localidad %}📍 {{ p.localidad }}{% if p.provincia %}, {{ p.provincia }}{% endif %}{% endif %}
+              </p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">No hay resultados.</p>
+    {% endif %}
+  {% endwith %}
+{% elif propiedades %}
+  {% with qs=propiedades %}
+    {% if qs and qs|length %}
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+        {% for p in qs %}
+          <a href="{% url 'propiedad_detalle' p.codigo %}" class="card property-card group transition no-gray">
+            <div class="thumb">
+              <img
+                src="{% if p.imagen_principal %}{{ p.imagen_principal.url }}{% else %}{% static 'img/placeholder.webp' %}{% endif %}"
+                alt="{{ p.titulo|default:p.codigo }}">
+            </div>
+
+            <div class="content">
+              <h3 class="font-semibold clamp-2">{{ p.titulo|default:p.codigo }}</h3>
+
+              {% if p.precio_display %}
+                <p class="text-sm muted">{{ p.precio_display }}</p>
+              {% endif %}
+
+              <div class="mt-1 flex items-center gap-2 text-xs muted">
+                {% if p.habitaciones %}<span>🛏️ {{ p.habitaciones }}</span>{% endif %}
+                {% if p.banos %}<span>🛁 {{ p.banos }}</span>{% endif %}
+                <span>{% if p.cochera %}🚗 Cochera{% else %}<span class="opacity-70">🚗 No{% endif %}</span>
+              </div>
+
+              <p class="text-[11px] muted mt-1 clamp-1">
+                {% if p.localidad %}📍 {{ p.localidad }}{% if p.provincia %}, {{ p.provincia }}{% endif %}{% endif %}
+              </p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">No hay resultados.</p>
+    {% endif %}
+  {% endwith %}
+{% else %}
+  <p class="muted">No hay resultados.</p>
+{% endif %}

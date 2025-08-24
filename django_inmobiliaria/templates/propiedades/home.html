@@ -20,6 +20,9 @@
        target="_blank" rel="noopener">
       Pedir presupuesto por WhatsApp
     </a>
+    <a class="btn btn-ghost" href="{% url 'propiedades_listado' %}">
+      Ver ejemplos del sitio
+    </a>
   </div>
 </section>
 
@@ -27,25 +30,26 @@
 <section>
   <h2 class="text-lg font-semibold mb-1">Catálogo de Propiedades Destacadas</h2>
   <p>
-    Las propiedades que se muestran en este sitio son meras ilustraciones, a modo de ejemplo.
+    Las Propiedades que se muestran son meramente a modo ilustrativos.
   </p>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  <!-- Ahora hasta 5 columnas en pantallas muy grandes -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
     {% for p in destacadas %}
-      <a href="{% url 'propiedad_detalle' p.codigo %}" class="card group transition property-card h-full">
-        <!-- Miniatura con relación de aspecto fija -->
+      <a href="{% url 'propiedad_detalle' p.codigo %}"
+         class="card property-card group transition no-gray">
+        <!-- Miniatura con ratio fijo y badge -->
         <div class="thumb relative">
           <img
             src="{% if p.imagen_principal %}{{ p.imagen_principal.url }}{% else %}{% static 'img/placeholder.webp' %}{% endif %}"
             alt="{{ p.titulo }}"
-            loading="lazy"
           />
           {% if p.destacada %}
             <span class="chip absolute top-2 left-2">Destacada</span>
           {% endif %}
         </div>
 
-        <!-- Contenido -->
+        <!-- Cuerpo de la card -->
         <div class="content">
           <h3 class="font-semibold clamp-1">{{ p.titulo }}</h3>
           <p class="text-sm muted">{{ p.precio_display }}</p>
@@ -53,8 +57,16 @@
           <div class="mt-1 flex items-center gap-2 text-xs muted">
             <span>🛏️ {{ p.habitaciones }}</span>
             <span>🛁 {{ p.banos }}</span>
-            {% if p.cochera %}<span>🚗 Cochera</span>{% else %}<span class="opacity-70">🚗 No posee</span>{% endif %}
-            {% if p.acepta_mascotas %}<span>🐶 Acepta</span>{% else %}<span class="opacity-70">🐶 No</span>{% endif %}
+            {% if p.cochera %}
+              <span>🚗 Cochera</span>
+            {% else %}
+              <span class="opacity-70">🚗 No posee</span>
+            {% endif %}
+            {% if p.acepta_mascotas %}
+              <span>🐶 Acepta</span>
+            {% else %}
+              <span class="opacity-70">🐶 No</span>
+            {% endif %}
           </div>
 
           <p class="text-[11px] muted mt-1 clamp-1">📍 {{ p.localidad }}, {{ p.provincia }}</p>

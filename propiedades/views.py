@@ -76,7 +76,7 @@ from .utils import normalizar_texto
 # --- Mapa simple de sinónimos/abreviaturas (todo en minúsculas, sin tildes) ---
 SYNONYMS = {
     # tipos
-    "departamento": ["departamento", "depto", "dto", "apartamento", "apto"],
+    "departamento": ["departamento", "depto", "dto","dpto", "apartamento", "apto"],
     "casa": ["casa", "chalet", "chalec"],  # chalec = por si recorta
     "ph": ["ph", "propiedad horizontal"],
     "local": ["local", "local comercial", "comercial"],

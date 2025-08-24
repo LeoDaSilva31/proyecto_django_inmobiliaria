@@ -1,11 +1,23 @@
 {# templates/propiedades/_filters.html #}
+{% load static %}
 
-{# --- Chips de filtros aplicados (cada chip remueve sólo ese filtro) --- #}
+<style>
+  .filters { backdrop-filter: blur(10px) saturate(120%); -webkit-backdrop-filter: blur(10px) saturate(120%); }
+  .filters label { font-size:.78rem; color:var(--muted); margin-bottom:.25rem; display:block; }
+  .filters .input, .filters .select { padding:.5rem .65rem; border-radius:.6rem; }
+  .filters .btn.btn-sm { padding:.5rem .7rem; border-radius:.55rem; font-size:.92rem; }
+  .filters .chip { font-size:10.5px; padding:.22rem .55rem; }
+  .filters .tools { display:flex; align-items:center; gap:.5rem; }
+  .filters .divider { height:1.25rem; width:1px; background:var(--line); }
+  .filters .toggle-adv[aria-expanded="true"] { filter:brightness(1.05); }
+</style>
+
+{# --- Chips de filtros aplicados --- #}
 {% if applied_filters %}
-  <div class="flex flex-wrap gap-2 mb-3">
+  <div class="filters flex flex-wrap gap-1.5 mb-2">
     {% for f in applied_filters %}
       <form method="get" class="inline">
-        {# reenviamos todos los params MENOS el del chip actual #}
+        {# reenviamos todos los params MENOS el chip actual #}
         {% for k, v in params.items %}
           {% if k != f.key and v %}
             <input type="hidden" name="{{ k }}" value="{{ v }}">
@@ -17,30 +29,28 @@
       </form>
     {% endfor %}
 
-    {# limpiar filtros (conserva q) #}
-    <form method="get" class="inline">
-      {% if q %}
-        <input type="hidden" name="q" value="{{ q }}">
-      {% endif %}
-      <button class="chip hover:brightness-95" type="submit" title="Limpiar filtros">
-        Limpiar filtros
-      </button>
-    </form>
+    {# Limpiar TODO (incluida la búsqueda q) #}
+    {% url 'buscar_propiedades' as search_url %}
+    <a class="chip hover:brightness-95" href="{{ search_url }}" title="Limpiar todos los filtros">
+      Limpiar filtros
+    </a>
   </div>
 {% endif %}
 
-{# --- Formulario de filtros (GET, acumulativo) --- #}
-<form method="get" action="{% url 'buscar_propiedades' %}" class="card p-4 mb-4">
-  <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
+{# --- Formulario compacto con glass --- #}
+<form method="get" action="{% url 'buscar_propiedades' %}" class="filters-form filters card card--glass p-3 md:p-4 mb-4">
+  <div class="grid grid-cols-2 md:grid-cols-6 xl:grid-cols-8 gap-2 md:gap-3 items-end">
 
-    <div class="md:col-span-2">
-      <label class="block text-sm muted mb-1">Buscar</label>
-      <input class="input" type="text" name="q" placeholder="Ingrese su busqueda"
-             value="{{ q|default:'' }}">
+    {# BUSCADOR #}
+    <div class="col-span-2 md:col-span-3 xl:col-span-4">
+      <label>Buscar</label>
+      <input class="input" type="search" name="q" placeholder="Acá empieza tu busqueda"
+             value="{{ q|default:'' }}" />
     </div>
 
+    {# OPERACIÓN #}
     <div>
-      <label class="block text-sm muted mb-1">Operación</label>
+      <label>Operación</label>
       <select class="select" name="operacion">
         <option value="">Todas</option>
         {% for val, label in operaciones %}
@@ -49,8 +59,9 @@
       </select>
     </div>
 
+    {# TIPO #}
     <div>
-      <label class="block text-sm muted mb-1">Tipo</label>
+      <label>Tipo</label>
       <select class="select" name="tipo">
         <option value="">Todos</option>
         {% for val, label in tipos %}
@@ -59,9 +70,9 @@
       </select>
     </div>
 
-    {# NUEVO: Localidad (opciones dinámicas) #}
+    {# LOCALIDAD #}
     <div>
-      <label class="block text-sm muted mb-1">Localidades disponibles</label>
+      <label>Localidad</label>
       <select class="select" name="localidad">
         <option value="">Todas</option>
         {% for loc in localidades %}
@@ -70,42 +81,106 @@
       </select>
     </div>
 
-    {# Inputs numéricos chicos: envolvemos en un contenedor de ancho fijo #}
-    <div style="max-width: 9rem;">
-      <label class="block text-sm muted mb-1">Habitaciones (mín.)</label>
+    {# HABITACIONES (compacto) #}
+    <div class="max-w-36">
+      <label>Hab. mín.</label>
       <input class="input" type="number" min="0" name="habitaciones" value="{{ params.habitaciones|default:'' }}">
     </div>
 
-    {# Quitado: Precio mín. #}
-    {# <div> ... </div> #}
-
-    <div style="max-width: 9rem;">
-      <label class="block text-sm muted mb-1">Precio máx.</label>
+    {# PRECIO MÁX. (compacto) #}
+    <div class="max-w-36">
+      <label>Precio máx.</label>
       <input class="input" type="number" min="0" name="max" value="{{ params.max|default:'' }}">
     </div>
 
-    <div class="md:col-span-2 flex items-center gap-3">
-      <label class="inline-flex items-center gap-2">
+    {# MASCOTAS #}
+    <div class="col-span-2 md:col-span-1">
+      <label class="inline-flex items-center gap-2 mt-5 md:mt-0">
         <input type="checkbox" name="mascotas" value="1" {% if params.mascotas %}checked{% endif %}>
-        <span>Acepta mascotas</span>
+        <span class="text-sm">Mascotas</span>
       </label>
     </div>
 
-    <div class="md:col-span-2 flex items-center gap-3">
-      <button type="button" class="btn btn-light" type="submit">Aplicar</button>
-
-      {# Limpiar rápido (conserva q) #}
-      <button type="button" class="btn btn-light" type="submit" name="__clear" value="1"
-              onclick="
-                const form=this.form;
-                const keepQ=form.querySelector('input[name=q]')?.value||'';
-                [...form.elements].forEach(el=>{
-                  if(el.name && el.name!=='q'){ el.disabled=true;}
-                });
-                if(keepQ===''){ form.querySelector('input[name=q]')?.remove(); }
-              ">
-        Limpiar filtros
+    {# CONTROLES (AL FINAL, JUNTOS) #}
+    <div class="col-span-2 md:col-span-6 xl:col-span-8 flex items-center justify-between md:justify-end gap-2 mt-1">
+      {# Toggle “Más filtros” para mobile (placeholder) #}
+      <button type="button"
+              class="btn btn-outline btn-sm md:hidden toggle-adv"
+              data-toggle="#advFilters"
+              aria-expanded="false"
+              aria-controls="advFilters">
+        Más filtros
       </button>
+
+      <div class="flex items-center gap-2">
+        <button id="filters-apply" class="btn btn-primary btn-sm" type="submit">
+          Aplicar
+        </button>
+
+        {# Limpiar TODO (incluida q) #}
+        {% url 'buscar_propiedades' as search_url %}
+        <a id="filters-clear-link"
+           class="btn btn-ghost btn-sm"
+           href="{{ search_url }}">
+          Limpiar filtros
+        </a>
+      </div>
     </div>
   </div>
+
+  {# PANEL DE AVANZADOS (placeholder) #}
+  <div id="advFilters" class="mt-3 grid grid-cols-2 gap-2 md:hidden" hidden>
+    {# agrega aquí más controles si los necesitás en mobile #}
+  </div>
 </form>
+
+{# =========== JS: Toggle “Más filtros” y ENTER=Aplicar en desktop =========== #}
+<script>
+  (function() {
+    const form = document.querySelector('.filters-form');
+    if (!form) return;
+
+    // Toggle “Más filtros” (mobile)
+    const toggleBtn = form.querySelector('.toggle-adv');
+    if (toggleBtn) {
+      const panel = form.querySelector(toggleBtn.getAttribute('data-toggle'));
+      if (panel) {
+        toggleBtn.addEventListener('click', () => {
+          const open = !panel.hasAttribute('hidden');
+          if (open) {
+            panel.setAttribute('hidden', '');
+            toggleBtn.setAttribute('aria-expanded', 'false');
+          } else {
+            panel.removeAttribute('hidden');
+            toggleBtn.setAttribute('aria-expanded', 'true');
+          }
+        });
+      }
+    }
+
+    // ENTER = Aplicar (solo desktop, dentro del formulario)
+    const isDesktop = window.matchMedia('(pointer: fine)').matches &&
+                      window.matchMedia('(min-width: 1024px)').matches;
+
+    document.addEventListener('keydown', (e) => {
+      if (!isDesktop) return;
+      if (e.key !== 'Enter' || e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) return;
+
+      const active = document.activeElement;
+      if (!active) return;
+      if (active.tagName === 'TEXTAREA') return;
+      if (!form.contains(active)) return;
+      if (active.tagName === 'BUTTON' || active.tagName === 'A') return;
+
+      e.preventDefault();
+      const applyBtn = form.querySelector('#filters-apply');
+      if (applyBtn) {
+        applyBtn.click();
+      } else if (form.requestSubmit) {
+        form.requestSubmit();
+      } else {
+        form.submit();
+      }
+    });
+  })();
+</script>
