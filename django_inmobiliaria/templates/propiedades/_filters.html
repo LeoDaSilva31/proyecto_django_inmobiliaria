@@ -11,6 +11,38 @@
   .filters .divider { height:1.25rem; width:1px; background:var(--line); }
   .filters .toggle-adv[aria-expanded="true"] { filter:brightness(1.05); }
 </style>
+<style>
+  /* Panel de filtros con gris + textura suave */
+  .filters-form.filters {
+    background: #E5E7EB; /* base gris */
+    border: 1px solid #D1D5DB;
+    border-radius: 0.9rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+
+    /* === TEXTURA SUTIL === */
+    background-image:
+      linear-gradient(135deg, rgba(255,255,255,0.15) 25%, transparent 25%),
+      linear-gradient(225deg, rgba(255,255,255,0.15) 25%, transparent 25%),
+      linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%),
+      linear-gradient(315deg, rgba(255,255,255,0.15) 25%, transparent 25%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+
+  /* Variante dark */
+  html.dark .filters-form.filters {
+    background: #1F2937;
+    border-color: #374151;
+    background-image:
+      linear-gradient(135deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+      linear-gradient(225deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+      linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+      linear-gradient(315deg, rgba(255,255,255,0.05) 25%, transparent 25%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+</style>
+
 
 {# --- Chips de filtros aplicados --- #}
 {% if applied_filters %}

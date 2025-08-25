@@ -353,3 +353,5 @@ html.dark .table tbody tr:hover { background: color-mix(in srgb, var(--brand-900
 /* Contenido elástico + CTA al pie */
 .property-card .content{ display:flex; flex-direction:column; gap:.5rem; padding:1rem; flex:1 1 auto; }
 .property-card .cta{ margin-top:auto; }
+
+
