@@ -42,6 +42,56 @@
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
   }
 </style>
+<style>
+  /* === FORZAR PANEL GRIS EN EL FORM (sin tocar HTML) === */
+  .filters-form.filters.card.card--glass {
+    /* anular glass dentro del form */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+
+    /* fondo sólido más oscuro que el bg */
+    background: #E0E2E7 !important;   /* si lo querés un pelín más claro: #E5E7EB */
+    border: 1px solid #D1D5DB !important;
+    border-radius: 0.9rem !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05) !important;
+  }
+
+  /* Dark mode: gris azulado sobrio */
+  html.dark .filters-form.filters.card.card--glass {
+    background: #111827 !important;   /* tw gray-900 aprox */
+    border-color: #1f2937 !important; /* tw gray-800 aprox */
+  }
+
+  /* En móviles mantenemos sólido (limpio y sobrio) */
+  @media (max-width: 1023.98px) {
+    .filters-form.filters.card.card--glass {
+      background: #E0E2E7 !important;
+    }
+    html.dark .filters-form.filters.card.card--glass {
+      background: #111827 !important;
+    }
+  }
+
+  /* Opcional: en desktop, un degradado ultra-suave (casi imperceptible) */
+  @media (min-width: 1024px) {
+    .filters-form.filters.card.card--glass {
+      background: linear-gradient(180deg, #ECEFF3 0%, #E0E2E7 100%) !important;
+    }
+    html.dark .filters-form.filters.card.card--glass {
+      background: linear-gradient(180deg, #1F2937 0%, #111827 100%) !important;
+    }
+  }
+
+  /* Labels un poco más notorios sobre gris */
+  .filters-form.filters.card.card--glass label {
+    color: #4B5563; /* gray-600 */
+    font-weight: 500;
+  }
+  html.dark .filters-form.filters.card.card--glass label {
+    color: #A3AAB6;
+  }
+</style>
+
 
 
 {# --- Chips de filtros aplicados --- #}
@@ -145,14 +195,14 @@
       </button>
 
       <div class="flex items-center gap-2">
-        <button id="filters-apply" class="btn btn-ghost btn-sm" type="submit">
+        <button id="filters-apply" class="btn btn-ghost" type="submit">
           Aplicar
         </button>
 
         {# Limpiar TODO (incluida q) #}
         {% url 'buscar_propiedades' as search_url %}
         <a id="filters-clear-link"
-           class="btn btn-ghost btn-sm"
+           class="btn btn-ghost"
            href="{{ search_url }}">
           Limpiar filtros
         </a>
