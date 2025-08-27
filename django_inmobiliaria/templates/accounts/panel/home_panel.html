@@ -1,0 +1,16 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Panel Staff</title>
+  <link rel="stylesheet" href="{% static 'css/theme_panel_admin.css' %}">
+</head>
+<body>
+  <div class="card">
+    <h1 class="text-xl font-bold mb-4">Panel del staff</h1>
+    <p><a href="{% url 'panel_propiedades_list' %}" class="btn">Gestionar propiedades</a></p>
+    <p style="margin-top:1rem;"><a href="{% url 'logout' %}" class="btn-secondary">Cerrar sesión</a></p>
+  </div>
+</body>
+</html>

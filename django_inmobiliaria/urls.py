@@ -37,7 +37,7 @@ urlpatterns = [
     path("buscar/", buscar_propiedades, name="buscar_propiedades"),
     path("nosotros/", nosotros, name="nosotros"),
 
-    path("cuentas/", include("accounts.urls")),
+    path("accounts/", include("accounts.urls")),
 
   
     path("robots.txt", robots_txt, name="robots_txt"),

@@ -1,23 +1,38 @@
-{% extends "base.html" %}
-{% block title %}Administración{% endblock %}
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Acceso Staff</title>
+  <link rel="stylesheet" href="{% static 'css/theme_panel_admin.css' %}">
+</head>
+<body>
+  <div class="card">
+    <h1 class="text-2xl font-bold mb-6 text-center">Acceso Staff</h1>
 
-{% block content %}
-<h1 class="text-xl font-semibold mb-4">Acceso para personal</h1>
-<form method="post" class="max-w-sm space-y-3 card p-4">
-  {% csrf_token %}
-  <input type="hidden" name="next" value="{{ next }}">
-  <div>
-    <label class="block text-sm mb-1">DNI o usuario</label>
-    <input name="dni" class="input" required>
+    {% if messages %}
+      {% for m in messages %}
+        <div class="alert 
+          {% if m.tags == 'success' %}alert-success
+          {% elif m.tags == 'warning' %}alert-warning
+          {% elif m.tags == 'error' %}alert-danger
+          {% else %}alert-info{% endif %}">
+          {{ m }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {{ form.usuario_o_dni.errors }}
+      <input type="text" name="usuario_o_dni" placeholder="Usuario o DNI" class="form-input">
+
+      {{ form.password.errors }}
+      <input type="password" name="password" placeholder="Contraseña" class="form-input">
+
+      <button type="submit" class="btn">Ingresar</button>
+    </form>
   </div>
-  <div>
-    <label class="block text-sm mb-1">Contraseña</label>
-    <input type="password" name="password" class="input" required>
-  </div>
-  {% if form.non_field_errors %}
-    <p class="text-red-600 text-sm">{{ form.non_field_errors|join:", " }}</p>
-  {% endif %}
-  <button class="btn btn-primary w-full">Ingresar</button>
-</form>
-<p class="text-xs muted mt-3">Solo personal autorizado.</p>
-{% endblock %}
+</body>
+</html>

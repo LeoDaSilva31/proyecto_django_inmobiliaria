@@ -2,6 +2,8 @@
 from pathlib import Path
 from decouple import config
 import os
+from pathlib import Path
+import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -146,7 +148,7 @@ AUTH_USER_MODEL = "accounts.User"
 
 # Login/Logout
 LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "panel_home"
+LOGIN_REDIRECT_URL = "panel_propiedades_list"
 LOGOUT_REDIRECT_URL = "login"
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -220,3 +222,9 @@ COMPANY_X         = "https://x.com/tuinmobiliaria"
 IP_ALLOWLIST_ENABLED = os.getenv("IP_ALLOWLIST_ENABLED", "0") == "1"
 IP_ALLOWLIST_SCOPE   = os.getenv("IP_ALLOWLIST_SCOPE", "admin") 
 ALLOWED_IPS          = os.getenv("ALLOWED_IPS", "")             
+
+# Inicializar env
+env = environ.Env()
+environ.Env.read_env() 
+
+AUTO_ADD_STAFF_TO_CARGADORES = env.bool("AUTO_ADD_STAFF_TO_CARGADORES", default=True)
