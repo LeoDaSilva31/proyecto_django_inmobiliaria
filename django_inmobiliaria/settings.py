@@ -143,8 +143,20 @@ else:
 
 
 AUTH_USER_MODEL = "accounts.User"
-LOGIN_URL = "login"          # quitamos two_factor
-LOGIN_REDIRECT_URL = "home"
+
+# Login/Logout
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "panel_home"
+LOGOUT_REDIRECT_URL = "login"
+
+AUTH_PASSWORD_VALIDATORS = [
+    {"NAME":"django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME":"django.contrib.auth.password_validation.MinimumLengthValidator","OPTIONS":{"min_length":8}},
+    {"NAME":"django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME":"django.contrib.auth.password_validation.NumericPasswordValidator"},
+]
+
+CACHES = {"default":{"BACKEND":"django.core.cache.backends.locmem.LocMemCache"}}
 
 
 SESSION_COOKIE_AGE = 600
