@@ -1,0 +1,96 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Listado de Propiedades</title>
+  <link rel="stylesheet" href="{% static 'css/theme_panel_admin.css' %}">
+</head>
+<body>
+
+    <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:1rem;">
+      <h1 class="text-2xl font-bold">Propiedades</h1>
+      <a href="{% url 'logout' %}" class="btn-secondary" style="text-align:center;">
+            Cerrar sesión
+      </a>
+    </div>
+  <div class="card" style="max-width: 80rem;">
+    <h1 class="text-2xl font-bold mb-6">Listado de Propiedades</h1>
+
+    {% if messages %}
+      {% for m in messages %}
+        <div class="alert 
+          {% if m.tags == 'success' %}alert-success
+          {% elif m.tags == 'warning' %}alert-warning
+          {% elif m.tags == 'error' %}alert-danger
+          {% else %}alert-info{% endif %}">
+          {{ m }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="get" style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
+      <input type="text" name="q" value="{{ q }}" placeholder="Buscar título, código, dirección…" class="form-input" style="max-width:20rem;">
+      <input type="text" name="localidad" value="{{ localidad }}" placeholder="Localidad" class="form-input" style="max-width:16rem;">
+      <select name="estado" class="form-input" style="max-width:14rem;">
+        <option value="">(Todos)</option>
+        <option value="activa" {% if estado == "activa" %}selected{% endif %}>Activa</option>
+        <option value="pausada" {% if estado == "pausada" %}selected{% endif %}>Pausada</option>
+        <option value="finalizada" {% if estado == "finalizada" %}selected{% endif %}>Finalizada</option>
+      </select>
+      <button type="submit" class="btn" style="max-width:10rem;">Filtrar</button>
+      <a href="{% url 'panel_propiedad_crear' %}" class="btn-secondary" style="max-width:10rem; text-align:center;">+ Nueva</a>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Título</th>
+          <th>Tipo / Operación</th>
+          <th>Localidad</th>
+          <th>Estado</th>
+          <th>Destacada</th>
+          <th style="width: 280px;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in page_obj %}
+          <tr>
+            <td>{{ p.codigo }}</td>
+            <td>{{ p.titulo }}</td>
+            <td>{{ p.get_tipo_display }} / {{ p.get_tipo_operacion_display }}</td>
+            <td>{{ p.localidad }}, {{ p.provincia }}</td>
+            <td>{{ p.get_estado_display }}</td>
+            <td>{{ p.destacada|yesno:"Sí,No" }}</td>
+            <td>
+              <a href="{% url 'panel_propiedad_editar' p.pk %}">Editar</a>
+              {% if p.estado != "pausada" %} | <a href="{% url 'panel_propiedad_pausar' p.pk %}">Pausar</a>{% endif %}
+              {% if p.estado != "activa" %} | <a href="{% url 'panel_propiedad_activar' p.pk %}">Activar</a>{% endif %}
+              {% if p.estado != "finalizada" %} | <a href="{% url 'panel_propiedad_finalizar' p.pk %}">Finalizar</a>{% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="7" style="text-align:center;">Sin propiedades.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.75rem;">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ q }}&estado={{ estado }}&localidad={{ localidad }}">Anterior</a>
+      {% else %}
+        <span></span>
+      {% endif %}
+
+      <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ q }}&estado={{ estado }}&localidad={{ localidad }}">Siguiente</a>
+      {% else %}
+        <span></span>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

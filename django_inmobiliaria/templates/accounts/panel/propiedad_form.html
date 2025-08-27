@@ -1,0 +1,323 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>{% if modo == "crear" %}Nueva{% else %}Editar{% endif %} Propiedad</title>
+  <link rel="stylesheet" href="{% static 'css/theme_panel_admin.css' %}">
+    <style>
+    /* Reset / base */
+    * { box-sizing: border-box; }
+
+    body {
+        background:#f3f4f6; /* gris clarito general */
+        font-family: system-ui, sans-serif;
+    }
+
+    /* Layout responsivo del formulario */
+    .container { 
+        max-width: 1100px; 
+        margin: 2rem auto; 
+        padding: 0 1rem;
+    }
+    .grid { display: grid; gap: 12px; }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+    @media (max-width: 900px) { .grid-4 { grid-template-columns: repeat(2, 1fr);} }
+    @media (max-width: 700px) { 
+        .grid-3, .grid-4, .grid-2 { grid-template-columns: 1fr; } 
+    }
+
+    /* Bloques de sección */
+    .section { 
+        background:#fff; 
+        border-radius:8px; 
+        box-shadow:0 1px 4px rgba(0,0,0,.08); 
+        padding:20px; 
+        margin-bottom: 1rem;
+    }
+
+    /* Labels + hints */
+    .label { display:block; font-weight:600; margin-bottom:4px; }
+    .hint { font-size: 0.85rem; color:#6b7280; margin-top:2px; }
+
+    /* Inputs */
+    input[type=text],
+    input[type=number],
+    input[type=file],
+    select,
+    textarea {
+        width: 100%; 
+        max-width: 100%;
+        padding: 8px 10px;
+        border:1px solid #d1d5db;
+        border-radius:6px;
+        font-size: 0.95rem;
+        background:#fff;
+    }
+    textarea { resize: vertical; }
+
+    /* Botones */
+    .btn {
+        background:#2563eb; color:white; font-weight:600;
+        padding:10px 16px; border-radius:6px;
+        border:none; cursor:pointer;
+        transition: background .2s;
+    }
+    .btn:hover { background:#1d4ed8; }
+    .btn-secondary {
+        background:#e5e7eb; color:#111827;
+        padding:10px 16px; border-radius:6px;
+        font-weight:500; text-decoration:none;
+        display:inline-block;
+    }
+    </style>
+
+</head>
+<body>
+    <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:1rem;">
+      <h1 class="text-2xl font-bold">Propiedades</h1>
+      <a href="{% url 'logout' %}" class="btn-secondary" style="text-align:center;">
+           Cerrar sesión
+      </a>
+    </div>
+
+  <div class="container">
+    <h1 class="text-2xl font-bold mb-6">
+      {% if modo == "crear" %}Nueva{% else %}Editar{% endif %} Propiedad
+    </h1>
+
+    {% if messages %}
+      {% for m in messages %}
+        <div class="alert 
+          {% if m.tags == 'success' %}alert-success
+          {% elif m.tags == 'warning' %}alert-warning
+          {% elif m.tags == 'error' %}alert-danger
+          {% else %}alert-info{% endif %}">
+          {{ m }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {{ form.non_field_errors }}
+
+      <!-- Datos principales -->
+      <div class="section">
+        <div class="grid">
+          <div>
+            <label class="label" for="{{ form.titulo.id_for_label }}">Título</label>
+            {{ form.titulo }}
+            <div class="hint">Ej: Departamento 2 ambientes en Quilmes Centro</div>
+            {{ form.titulo.errors }}
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="margin-top:8px;">
+          <div>
+            <label class="label" for="{{ form.tipo.id_for_label }}">Tipo</label>
+            {{ form.tipo }}
+            {{ form.tipo.errors }}
+          </div>
+          <div>
+            <label class="label" for="{{ form.tipo_operacion.id_for_label }}">Operación</label>
+            {{ form.tipo_operacion }}
+            {{ form.tipo_operacion.errors }}
+          </div>
+          <div>
+            <label class="label" for="{{ form.estado.id_for_label }}">Estado</label>
+            {{ form.estado }}
+            {{ form.estado.errors }}
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:8px;">
+          <div>
+            <label class="label" for="{{ form.precio_usd.id_for_label }}">Precio en USD</label>
+            {{ form.precio_usd }}
+            {{ form.precio_usd.errors }}
+          </div>
+          <div>
+            <label class="label" for="{{ form.precio_pesos.id_for_label }}">Precio en Pesos</label>
+            {{ form.precio_pesos }}
+            {{ form.precio_pesos.errors }}
+          </div>
+        </div>
+
+        <div class="grid grid-4" style="margin-top:8px;">
+          <div>
+            <label class="label" for="{{ form.habitaciones.id_for_label }}">Dormitorios</label>
+            {{ form.habitaciones }}
+            {{ form.habitaciones.errors }}
+          </div>
+          <div>
+            <label class="label" for="{{ form.banos.id_for_label }}">Baños</label>
+            {{ form.banos }}
+            {{ form.banos.errors }}
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding-top: 8px;">
+            {{ form.cochera }} <label for="{{ form.cochera.id_for_label }}">Cochera</label>
+            {{ form.cochera.errors }}
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding-top: 8px;">
+            {{ form.acepta_mascotas }} <label for="{{ form.acepta_mascotas.id_for_label }}">Acepta mascotas</label>
+            {{ form.acepta_mascotas.errors }}
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:8px;">
+          <div>
+            <label class="label" for="{{ form.superficie_total.id_for_label }}">Superficie total (m²)</label>
+            {{ form.superficie_total }}
+            {{ form.superficie_total.errors }}
+          </div>
+          <div>
+            <label class="label" for="{{ form.superficie_cubierta.id_for_label }}">Superficie cubierta (m²)</label>
+            {{ form.superficie_cubierta }}
+            {{ form.superficie_cubierta.errors }}
+          </div>
+        </div>
+
+        <div class="grid grid-4" style="margin-top:8px;">
+          <div>
+            <label class="label" for="{{ form.direccion.id_for_label }}">Dirección</label>
+            {{ form.direccion }}
+            {{ form.direccion.errors }}
+          </div>
+          <div>
+            <label class="label" for="{{ form.localidad.id_for_label }}">Localidad</label>
+            {{ form.localidad }}
+            {{ form.localidad.errors }}
+          </div>
+          <div>
+            <label class="label" for="{{ form.provincia.id_for_label }}">Provincia</label>
+            {{ form.provincia }}
+            {{ form.provincia.errors }}
+          </div>
+          <div>
+            <label class="label" for="{{ form.pais.id_for_label }}">País</label>
+            {{ form.pais }}
+            {{ form.pais.errors }}
+          </div>
+        </div>
+
+        <div style="margin-top:8px;">
+          <label class="label" for="{{ form.descripcion.id_for_label }}">Descripción</label>
+          {{ form.descripcion }}
+          {{ form.descripcion.errors }}
+        </div>
+
+        <div class="grid grid-2" style="margin-top:8px;">
+          <div>
+            <label class="label" for="{{ form.imagen_principal.id_for_label }}">Imagen principal</label>
+            {{ form.imagen_principal }}
+            <div class="hint">Formato JPG/PNG/WebP. Peso recomendado &lt; 2MB.</div>
+            {{ form.imagen_principal.errors }}
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding-top: 28px;">
+            {{ form.destacada }} <label for="{{ form.destacada.id_for_label }}">Marcar como destacada</label>
+            {{ form.destacada.errors }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Galería -->
+      <div class="section" style="margin-top:14px;">
+        <h2 class="text-xl font-semibold">Galería de imágenes</h2>
+        <p class="hint" style="margin-bottom:8px;">Podés agregar varias fotos. Usá el botón “Agregar otra imagen”.</p>
+
+        {{ formset.management_form }}
+
+        <div id="galeria-forms">
+          {% for f in formset %}
+            <div class="border rounded-md p-3 mb-3">
+              {{ f.non_field_errors }}
+              <label class="label">Imagen</label>
+              {{ f.imagen }}
+              {% if f.instance.pk %}
+                <label style="display:inline-block; margin-top:6px;">{{ f.DELETE }} <span class="text-red-600">Quitar esta imagen</span></label>
+              {% endif %}
+              {{ f.errors }}
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Template para clonar (formset.empty_form) -->
+        <template id="empty-form-template">
+          <div class="border rounded-md p-3 mb-3">
+            <label class="label">Imagen</label>
+            __FIELD_HTML__
+          </div>
+        </template>
+
+        <button type="button" id="add-image-btn" class="btn" style="max-width:16rem;">+ Agregar otra imagen</button>
+        <div id="galeria-aviso" class="hint" style="margin-top:8px; display:none;">Llegaste al máximo de imágenes permitidas.</div>
+      </div>
+
+      <div style="display:flex; gap:0.75rem; margin-top:14px;">
+        <button type="submit" class="btn" style="max-width:12rem;">Guardar</button>
+        <a href="{% url 'panel_propiedades_list' %}" class="btn-secondary" style="max-width:12rem; text-align:center;">Volver</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- JS: agrega nuevos inputs de imagen usando el empty_form del formset -->
+  <script>
+    (function() {
+      const totalFormsInput =
+        document.getElementById('id_propiedadimagen_set-TOTAL_FORMS') ||
+        document.querySelector('input[name$="-TOTAL_FORMS"]');
+
+      if (!totalFormsInput) return;
+
+      const maxFormsInput =
+        document.getElementById('id_propiedadimagen_set-MAX_NUM_FORMS') ||
+        document.querySelector('input[name$="-MAX_NUM_FORMS"]');
+
+      const maxNum = maxFormsInput ? parseInt(maxFormsInput.value || '100', 10) : 100;
+
+      const container = document.getElementById('galeria-forms');
+      const addBtn = document.getElementById('add-image-btn');
+      const tmpl = document.getElementById('empty-form-template');
+      const aviso = document.getElementById('galeria-aviso');
+
+      // HTML del campo del empty_form escapado para JS
+      const emptyIndex = '__prefix__';
+      const protoHtml = "{{ formset.empty_form.imagen|escapejs }}";
+
+      function addImageForm() {
+        let index = parseInt(totalFormsInput.value, 10);
+        if (index >= maxNum) {
+          addBtn.disabled = true;
+          aviso.style.display = 'block';
+          return;
+        }
+        const fieldHtml = protoHtml.replaceAll(emptyIndex, index);
+        const html = tmpl.innerHTML.replace('__FIELD_HTML__', fieldHtml);
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html.trim();
+        const node = wrapper.firstElementChild;
+        container.appendChild(node);
+
+        // Scroll al nuevo input (mejora UX)
+        node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        // Incrementar TOTAL_FORMS
+        totalFormsInput.value = index + 1;
+
+        // Si justo llegamos al tope, avisamos
+        if (index + 1 >= maxNum) {
+          addBtn.disabled = true;
+          aviso.style.display = 'block';
+        }
+      }
+
+      addBtn.addEventListener('click', addImageForm);
+    })();
+  </script>
+</body>
+</html>
