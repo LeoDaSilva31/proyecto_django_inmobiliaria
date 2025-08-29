@@ -10,9 +10,10 @@
 
     <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:1rem;">
       <h1 class="text-2xl font-bold">Propiedades</h1>
-      <a href="{% url 'logout' %}" class="btn-secondary" style="text-align:center;">
-            Cerrar sesión
-      </a>
+        <a class="btn-secondary" href="{% url 'logout' %}?next={% url 'home' %}">
+          Cerrar sesión
+        </a>
+
     </div>
   <div class="card" style="max-width: 80rem;">
     <h1 class="text-2xl font-bold mb-6">Listado de Propiedades</h1>
