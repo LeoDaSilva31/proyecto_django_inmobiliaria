@@ -8,10 +8,10 @@ from django.contrib.auth.decorators import (
 )
 from django.core.cache import cache
 from django.core.paginator import Paginator
+from django.core.exceptions import PermissionDenied
 from django.db import transaction, IntegrityError
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
-from django.core.exceptions import PermissionDenied
 
 from .forms import LoginDNIForm, PropiedadForm, PropiedadImagenFormSet
 from propiedades.models import Propiedad
@@ -24,9 +24,13 @@ def staff_required(view):
     """Requiere usuario autenticado y is_staff=True."""
     return login_required(user_passes_test(lambda u: u.is_staff, login_url="login")(view))
 
-def _require_group(user, name="Cargadores"):
-    """Gate adicional: exige pertenecer al grupo Cargadores."""
-    if not user.groups.filter(name=name).exists():
+
+def require_any_group(user, names=("AdministradorCliente",)):
+    """
+    Exige que el usuario pertenezca al menos a uno de los grupos en 'names'.
+    Por defecto permite el grupo 'AdministradorCliente'.
+    """
+    if not user.groups.filter(name__in=names).exists():
         raise PermissionDenied
 
 
@@ -36,9 +40,9 @@ def _require_group(user, name="Cargadores"):
 def login_view(request):
     """
     Login para STAFF.
-    - Usuario/DNI + contraseña.
-    - Rate-limit: 5 intentos/15min por IP+identificador.
-    - Si valida -> redirige a listado de propiedades.
+    - Usuario o DNI + contraseña.
+    - Rate-limit: 5 intentos / 15min por IP+identificador.
+    - Si valida -> redirige al listado de propiedades.
     """
     form = LoginDNIForm(request.POST or None)
     if request.method == "POST":
@@ -51,13 +55,13 @@ def login_view(request):
             messages.error(request, "Demasiados intentos. Probá en 15 minutos.")
         else:
             if form.is_valid():
-                user = form.cleaned_data["user"]
+                user = form.cleaned_data["user"]  # ya verifica is_active + is_staff
                 login(request, user)
                 cache.delete(key)
                 nxt = request.GET.get("next")
                 return redirect(nxt or "panel_propiedades_list")
             else:
-                cache.set(key, attempts + 1, 15 * 60)
+                cache.set(key, attempts + 1, 15 * 60)  # 15 minutos
                 messages.error(request, "Credenciales inválidas.")
 
     return render(request, "accounts/login.html", {"form": form})
@@ -69,10 +73,12 @@ def logout_view(request):
 
 
 # =========================
-# Panel (home)
+# Panel (home, opcional)
 # =========================
 @staff_required
 def panel_home(request):
+    # Si querés, también podés exigir grupo acá:
+    # require_any_group(request.user, ("AdministradorCliente",))
     return render(request, "accounts/panel/home_panel.html")
 
 
@@ -82,10 +88,8 @@ def panel_home(request):
 @staff_required
 @permission_required("propiedades.view_propiedad", raise_exception=True)
 def panel_propiedades_list(request):
-    # Defensa extra: gate por grupo + permiso explícito
-    _require_group(request.user, "Cargadores")
-    if not request.user.has_perm("propiedades.view_propiedad"):
-        raise PermissionDenied
+    # Gate por grupo (cliente admin)
+    require_any_group(request.user, ("AdministradorCliente",))
 
     qs = Propiedad.objects.all().order_by("-creado")
 
@@ -95,13 +99,13 @@ def panel_propiedades_list(request):
 
     if q:
         qs = qs.filter(
-            Q(titulo__icontains=q) |
-            Q(descripcion__icontains=q) |
-            Q(direccion__icontains=q) |
-            Q(localidad__icontains=q) |
-            Q(provincia__icontains=q) |
-            Q(pais__icontains=q) |
-            Q(codigo__icontains=q)
+            Q(titulo__icontains=q)
+            | Q(descripcion__icontains=q)
+            | Q(direccion__icontains=q)
+            | Q(localidad__icontains=q)
+            | Q(provincia__icontains=q)
+            | Q(pais__icontains=q)
+            | Q(codigo__icontains=q)
         )
     if estado:
         qs = qs.filter(estado=estado)
@@ -113,6 +117,9 @@ def panel_propiedades_list(request):
     return render(request, "accounts/panel/propiedades_list.html", ctx)
 
 
+# -------------------------
+# Utilidad: tope de imágenes
+# -------------------------
 def _validar_max_imagenes(formset, instancia_propiedad, max_total=20):
     existentes_no_borradas = 0
     for f in formset.forms:
@@ -134,9 +141,7 @@ def _validar_max_imagenes(formset, instancia_propiedad, max_total=20):
 @permission_required("propiedades.add_propiedad", raise_exception=True)
 @transaction.atomic
 def panel_propiedad_crear(request):
-    _require_group(request.user, "Cargadores")
-    if not request.user.has_perm("propiedades.add_propiedad"):
-        raise PermissionDenied
+    require_any_group(request.user, ("AdministradorCliente",))
 
     prop = Propiedad()
     if request.method == "POST":
@@ -163,7 +168,7 @@ def panel_propiedad_crear(request):
     return render(
         request,
         "accounts/panel/propiedad_form.html",
-        {"form": form, "formset": formset, "modo": "crear"}
+        {"form": form, "formset": formset, "modo": "crear"},
     )
 
 
@@ -171,9 +176,7 @@ def panel_propiedad_crear(request):
 @permission_required("propiedades.change_propiedad", raise_exception=True)
 @transaction.atomic
 def panel_propiedad_editar(request, pk):
-    _require_group(request.user, "Cargadores")
-    if not request.user.has_perm("propiedades.change_propiedad"):
-        raise PermissionDenied
+    require_any_group(request.user, ("AdministradorCliente",))
 
     prop = get_object_or_404(Propiedad, pk=pk)
     if request.method == "POST":
@@ -200,16 +203,14 @@ def panel_propiedad_editar(request, pk):
     return render(
         request,
         "accounts/panel/propiedad_form.html",
-        {"form": form, "formset": formset, "modo": "editar", "prop": prop}
+        {"form": form, "formset": formset, "modo": "editar", "prop": prop},
     )
 
 
 @staff_required
 @permission_required("propiedades.change_propiedad", raise_exception=True)
 def panel_propiedad_pausar(request, pk):
-    _require_group(request.user, "Cargadores")
-    if not request.user.has_perm("propiedades.change_propiedad"):
-        raise PermissionDenied
+    require_any_group(request.user, ("AdministradorCliente",))
     prop = get_object_or_404(Propiedad, pk=pk)
     prop.estado = "pausada"
     prop.save(update_fields=["estado"])
@@ -220,9 +221,7 @@ def panel_propiedad_pausar(request, pk):
 @staff_required
 @permission_required("propiedades.change_propiedad", raise_exception=True)
 def panel_propiedad_activar(request, pk):
-    _require_group(request.user, "Cargadores")
-    if not request.user.has_perm("propiedades.change_propiedad"):
-        raise PermissionDenied
+    require_any_group(request.user, ("AdministradorCliente",))
     prop = get_object_or_404(Propiedad, pk=pk)
     prop.estado = "activa"
     prop.save(update_fields=["estado"])
@@ -233,9 +232,7 @@ def panel_propiedad_activar(request, pk):
 @staff_required
 @permission_required("propiedades.change_propiedad", raise_exception=True)
 def panel_propiedad_finalizar(request, pk):
-    _require_group(request.user, "Cargadores")
-    if not request.user.has_perm("propiedades.change_propiedad"):
-        raise PermissionDenied
+    require_any_group(request.user, ("AdministradorCliente","))
     prop = get_object_or_404(Propiedad, pk=pk)
     prop.estado = "finalizada"
     prop.save(update_fields=["estado"])
