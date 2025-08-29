@@ -16,6 +16,8 @@ from django.core.exceptions import PermissionDenied
 from .forms import LoginDNIForm, PropiedadForm, PropiedadImagenFormSet
 from propiedades.models import Propiedad
 
+from django.urls import reverse
+
 
 # =========================
 # Constantes / helpers
@@ -71,7 +73,9 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect("login")
+    # respeta ?next=… si viene; si no, redirige al home público
+    next_url = request.GET.get("next") or reverse("home")
+    return redirect(next_url)
 
 
 # =========================
