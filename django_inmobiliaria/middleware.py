@@ -1,69 +1,76 @@
 # django_inmobiliaria/middleware.py
-import os
-import ipaddress
 from django.http import HttpResponseForbidden
-from django.urls import reverse
 from django.conf import settings
-
-def _parse_allowed(ips_raw: str):
-    items = [i.strip() for i in ips_raw.split(",") if i.strip()]
-    nets = []
-    for item in items:
-        try:
-            # Soporta IP simple o CIDR (ej: 203.0.113.5 o 203.0.113.0/24)
-            nets.append(ipaddress.ip_network(item, strict=False))
-        except ValueError:
-            pass
-    return nets
-
-def _client_ip(request):
-    # Detrás de Cloudflare, éste es el real
-    cf_ip = request.META.get("HTTP_CF_CONNECTING_IP")
-    if cf_ip:
-        return cf_ip
-    # Proxy común
-    xff = request.META.get("HTTP_X_FORWARDED_FOR")
-    if xff:
-        return xff.split(",")[0].strip()
-    return request.META.get("REMOTE_ADDR", "")
+import ipaddress
 
 class IPAllowlistMiddleware:
+    """
+    Restringe por IP SOLO las rutas protegidas (p.ej. tu admin oculto).
+    El resto del sitio (incluido /accounts/panel) queda libre.
+
+    Env:
+      IP_ALLOWLIST_ENABLED=1|0
+      IP_ALLOWLIST_SCOPE=admin   # usar 'admin' para proteger solo prefijos configurados
+      ALLOWED_IPS=186.57.154.224,2802:8010:6131:fe00:3dcf:c065:29ce:cce8
+
+    Ajustá PROTECTED_PREFIXES para tu ruta real de admin.
+    Detrás de Cloudflare toma la IP real de HTTP_CF_CONNECTING_IP.
+    """
+    # Cambiá el prefijo por el que uses realmente para tu admin oculto:
+    PROTECTED_PREFIXES = ("/constructordemisitio/",)
+
     def __init__(self, get_response):
         self.get_response = get_response
         self.enabled = getattr(settings, "IP_ALLOWLIST_ENABLED", False)
-        self.scope = getattr(settings, "IP_ALLOWLIST_SCOPE", "admin")
-        self.allowed_nets = _parse_allowed(getattr(settings, "ALLOWED_IPS", ""))
+        self.scope   = getattr(settings, "IP_ALLOWLIST_SCOPE", "admin")
+        # parsea ALLOWED_IPS (IPv4/IPv6, coma separada)
+        ips = getattr(settings, "ALLOWED_IPS", "") or ""
+        self.allowed = []
+        for raw in [x.strip() for x in ips.split(",") if x.strip()]:
+            try:
+                self.allowed.append(ipaddress.ip_network(raw, strict=False))
+            except ValueError:
+                # si no es red, intentá como IP individual
+                try:
+                    self.allowed.append(ipaddress.ip_network(raw + "/32", strict=False))
+                except Exception:
+                    pass
 
-        # URL de admin (configurable por env), por si no está en /admin
-        self.admin_prefix = "/" + (os.environ.get("DJANGO_ADMIN_URL", "admin/")).lstrip("/")
+    def _client_ip(self, request):
+        # Si estás detrás de Cloudflare:
+        cf_ip = request.META.get("HTTP_CF_CONNECTING_IP")
+        if cf_ip:
+            return cf_ip.strip()
+        # Si hay un proxy que setea X-Forwarded-For:
+        xff = request.META.get("HTTP_X_FORWARDED_FOR")
+        if xff:
+            return xff.split(",")[0].strip()
+        return (request.META.get("REMOTE_ADDR") or "").strip()
+
+    def _is_allowed(self, ip_str):
+        if not ip_str:
+            return False
+        try:
+            ip_obj = ipaddress.ip_address(ip_str)
+        except ValueError:
+            return False
+        if not self.allowed:
+            return False
+        return any(ip_obj in net for net in self.allowed)
 
     def __call__(self, request):
         if not self.enabled:
             return self.get_response(request)
 
-        path = request.path or "/"
-
-        # Exceptuamos estáticos y media cuando el alcance es "all"
-        if self.scope == "all" and (path.startswith("/static/") or path.startswith("/media/")):
-            return self.get_response(request)
-
-        # Determinar si debemos filtrar este path
-        should_filter = (
-            (self.scope == "admin" and path.startswith(self.admin_prefix))
-            or (self.scope == "all")
-        )
-        if not should_filter:
-            return self.get_response(request)
-
-        ip = _client_ip(request)
-        try:
-            addr = ipaddress.ip_address(ip)
-        except ValueError:
-            # Si no se pudo parsear la IP, bloqueamos
-            return HttpResponseForbidden("Forbidden (invalid IP)")
-
-        for net in self.allowed_nets:
-            if addr in net:
+        # Solo proteger admin oculto cuando scope == 'admin'
+        if self.scope == "admin":
+            if not request.path.startswith(self.PROTECTED_PREFIXES):
+                # Todo lo que no sea admin-oculto queda libre
                 return self.get_response(request)
+        # Si quisieras bloquear TODO el sitio, pondrías scope != 'admin'
 
-        return HttpResponseForbidden("Forbidden (IP not allowed)")
+        ip = self._client_ip(request)
+        if not self._is_allowed(ip):
+            return HttpResponseForbidden("Forbidden (IP not allowed)")
+
+        return self.get_response(request)
